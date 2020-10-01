@@ -3,6 +3,14 @@
 
 set -u
 
+YA_INSTALLER_VARIANT=prov
+YA_INSTALLER_CORE=pre-rel-2
+YA_INSTALLER_COREV=0.4.0-alpha.0-296c637f
+
+YA_INSTALLER_WASI=0.2.1
+YA_INSTALLER_VM=0.1.1
+
+
 say() {
     printf 'golem-installer: %s\n' "$1"
 }
@@ -81,13 +89,6 @@ YA_INSTALLER_DATA=${YA_INSTALLER_DATA:-$HOME/.local/share/ya-installer}
 YA_INSTALLER_BIN=${YA_INSTALLER_BIN:-$(autodetect_bin)}
 YA_INSTALLER_LIB=${YA_INSTALLER_LIB:-$HOME/.local/lib/yagna}
 
-YA_INSTALLER_VARIANT=prov
-YA_INSTALLER_CORE=pre-rel-2
-YA_INSTALLER_COREV=0.3.4-alpha.0-02175ac6
-
-YA_INSTALLER_WASI=0.2.1
-YA_INSTALLER_VM=0.1.1
-
 check_terms_of_use() {
     local _tagdir="$YA_INSTALLER_DATA/terms"
     local _tag="$_tagdir/testnet-01.tag"
@@ -100,7 +101,7 @@ privacy warning found at https://handbook.golem.network/see-also/terms
 EOF
     test -f "$_tag" && return
     while test ! -f "$_tag"; do
-        read -r -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
+        read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
         if [ "$ANS" = "yes" ]; then
             mkdir -p "$_tagdir" && touch "$_tag"
         elif [ "$ANS" = "no" ]; then
@@ -242,6 +243,9 @@ main() {
     need_cmd which
     check_terms_of_use
     say "installing to $YA_INSTALLER_BIN"
+
+    test -d "$YA_INSTALLER_BIN" || mkdir -p "$YA_INSTALLER_BIN"
+
     _ostype="$(detect_dist)"
 
     _dl_head
@@ -261,7 +265,7 @@ main() {
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
       (
         PATH="$YA_INSTALLER_BIN:$PATH"
-        golem setup
+        golem setup <&2
       )
     fi
 
