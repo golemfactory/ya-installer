@@ -8,6 +8,24 @@ terms:
     link: https://handbook.golem.network/see-also/terms
 components:
   - bin: yagna
+    desc: Golem network server.
+    required-by:
+      - req
+      - prov
   - bin: gftp
+    desc: Golem file transfer protocol client.
+    required-by:
+      - req
   - bin: ya-provider
+    required-by:
+      - prov
   - bin: exe-unit
+    path: plugins
+    required-by:
+      - prov
+repos:
+  yagna: https://github.com/golemfactory/yagna
+
+bundle:
+  req:
+    name: Requestor Bundle
