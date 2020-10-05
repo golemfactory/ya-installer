@@ -4,7 +4,7 @@
 set -u
 
 YA_INSTALLER_VARIANT=prov
-YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-v0.4.0-5193d8da}"
+YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-97982f26}"
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-pre-rel-${YA_INSTALLER_COREV}}"
 
 YA_INSTALLER_WASI=0.2.1
@@ -265,7 +265,7 @@ main() {
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
       (
         PATH="$YA_INSTALLER_BIN:$PATH"
-        golem setup <&2
+        golemsp setup <&2
       )
     fi
 
