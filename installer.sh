@@ -1,10 +1,10 @@
 #! /bin/bash
-# shellcheck shell=dash
+# shellcheck shell=bash
 
 set -u
 
 YA_INSTALLER_VARIANT=prov
-YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-937c4d33}"
+YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-49c52869}"
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-pre-rel-v${YA_INSTALLER_COREV}}"
 
 YA_INSTALLER_WASI=0.2.1
