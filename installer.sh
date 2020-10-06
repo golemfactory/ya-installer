@@ -4,8 +4,8 @@
 set -u
 
 YA_INSTALLER_VARIANT=prov
-YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-97982f26}"
-YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-pre-rel-${YA_INSTALLER_COREV}}"
+YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-937c4d33}"
+YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-pre-rel-v${YA_INSTALLER_COREV}}"
 
 YA_INSTALLER_WASI=0.2.1
 YA_INSTALLER_VM=0.1.1
@@ -174,7 +174,7 @@ download_core() {
 
     _url="https://github.com/golemfactory/yagna/releases/download/${YA_INSTALLER_CORE}/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
     _dl_start "golem core" "$YA_INSTALLER_COREV"
-    downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -
+    (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f - ) || return 1
     _dl_end
     echo -n "$YA_INSTALLER_DATA/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
 }
@@ -249,7 +249,7 @@ main() {
     _ostype="$(detect_dist)"
 
     _dl_head
-    _src_core=$(download_core "$_ostype" "$YA_INSTALLER_VARIANT")
+    _src_core=$(download_core "$_ostype" "$YA_INSTALLER_VARIANT") || return 1
     if [ "$YA_INSTALLER_VARIANT" = "prov" ]; then
       _src_wasi=$(download_wasi "$_ostype")
       if [ "$_ostype" = "linux" ]; then
