@@ -3,8 +3,8 @@
 
 set -u
 
-YA_INSTALLER_VARIANT=prov
-YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-49c52869}"
+YA_INSTALLER_VARIANT="provider"
+YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-5a31aac0}"
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-pre-rel-v${YA_INSTALLER_COREV}}"
 
 YA_INSTALLER_WASI=0.2.1
@@ -250,7 +250,7 @@ main() {
 
     _dl_head
     _src_core=$(download_core "$_ostype" "$YA_INSTALLER_VARIANT") || return 1
-    if [ "$YA_INSTALLER_VARIANT" = "prov" ]; then
+    if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
       _src_wasi=$(download_wasi "$_ostype")
       if [ "$_ostype" = "linux" ]; then
         _src_vm=$(download_vm "$_ostype") || exit 1
@@ -259,7 +259,7 @@ main() {
     fi
 
     install_bins "$_src_core" "$YA_INSTALLER_BIN"
-    if [ "$YA_INSTALLER_VARIANT" = "prov" ]; then
+    if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
       install_plugins "$_src_core/plugins" "$YA_INSTALLER_LIB"
       install_plugins "$_src_wasi" "$YA_INSTALLER_LIB"
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
