@@ -68,9 +68,8 @@ autodetect_bin() {
 }
 
 ensurepath() {
-    local _required
-    local _save_ifs
-    local _path
+    local _required _save_ifs _path _rcfile
+
     _required="$1"
     _save_ifs="$IFS"
     IFS=":"
@@ -82,7 +81,18 @@ ensurepath() {
         fi
     done
     IFS="$_save_ifs"
-    err "Add $_required to PATH"
+
+    case "${SHELL:-/bin/sh}" in
+      */bash) _rcfile=".bashrc" ;;
+      */zsh) _rcfile=".zshrc" ;;
+      *) _rcfile=".profile" 
+        ;;
+    esac
+
+    say "" >&2
+    say "Add $_required to your path" >&2
+    say 'HINT:   echo '\''export PATH="$HOME/.local/bin:$PATH"'\'" >> ~/${_rcfile}" >&2
+    exit 1
 }
 
 YA_INSTALLER_DATA=${YA_INSTALLER_DATA:-$HOME/.local/share/ya-installer}
@@ -208,14 +218,24 @@ download_vm() {
 
 
 install_bins() {
-    local _bin _dest
+    local _bin _dest _ln
 
     _dest="$2"
+    if [ "$_dest" = "/usr/bin" ] || [ "$_dest" = "/usr/local/bin" ]; then
+      _ln="cp"
+      test -w "$_dest" || {
+        _ln="sudo cp"
+        say "to install to $_dest, root priviliges required"
+      }
+    else
+      _ln="ln -sf"
+    fi
 
     for _bin in "$1"/*
     do
         if [ -f "$_bin" ] && [ -x "$_bin" ]; then
-            ln -sf -- "$_bin" "$_dest"
+           #echo -- $_ln -- "$_bin" "$_dest"
+           $_ln -- "$_bin" "$_dest"
         fi
     done
 }
@@ -265,7 +285,7 @@ main() {
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
       (
         PATH="$YA_INSTALLER_BIN:$PATH"
-        golemsp setup <&2
+        RUST_LOG=error "$_src_core/golemsp" setup <&2
       )
     fi
 
