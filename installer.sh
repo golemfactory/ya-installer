@@ -4,7 +4,7 @@
 set -u
 
 YA_INSTALLER_VARIANT=provider
-YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-080012a1}"
+YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0-a1a50fd9}"
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-pre-rel-v${YA_INSTALLER_COREV}}"
 
 YA_INSTALLER_WASI=0.2.1
@@ -85,7 +85,7 @@ ensurepath() {
     case "${SHELL:-/bin/sh}" in
       */bash) _rcfile=".bashrc" ;;
       */zsh) _rcfile=".zshrc" ;;
-      *) _rcfile=".profile" 
+      *) _rcfile=".profile"
         ;;
     esac
 
