@@ -1,9 +1,18 @@
-name: Manually triggered workflow
+name: Update installer
 on: workflow_dispatch
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
       - run: |
-          ./gen.sh
+          mkdir dist/dev
+          python gen.py
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
