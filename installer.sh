@@ -3,13 +3,16 @@
 
 set -u
 
+## @@BEGIN@@
+
 YA_INSTALLER_VARIANT=provider
 YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0}"
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v${YA_INSTALLER_COREV}}"
 
+## @@END@@
+
 YA_INSTALLER_WASI=0.2.1
 YA_INSTALLER_VM=0.1.2
-
 
 say() {
     printf 'golem-installer: %s\n' "$1"
