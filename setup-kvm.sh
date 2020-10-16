@@ -14,5 +14,5 @@ KERNEL=="kvm", GROUP="kvm", MODE="0660"
 EOF
 
 chown root:kvm /dev/kvm
+setfacl -m "user:$USER:rw" /dev/kvm
 adduser $u kvm
-
