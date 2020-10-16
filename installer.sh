@@ -258,12 +258,10 @@ main() {
 
     downloader --check
     need_cmd uname
-    need_cmd mktemp
     need_cmd chmod
     need_cmd mkdir
     need_cmd rm
     need_cmd rmdir
-    need_cmd which
     check_terms_of_use
     say "installing to $YA_INSTALLER_BIN"
 
