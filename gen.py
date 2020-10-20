@@ -1,6 +1,6 @@
 from urllib import request
 from dataclasses import dataclass, fields as datafields
-from typing import List
+from typing import List, Union
 import json
 
 
@@ -22,7 +22,9 @@ def dataclass_from_dict(klass, dikt: dict):
 
 
 def latest_release(owner: str, repo: str) -> Repo:
-    response = request.urlopen(f"https://api.github.com/repos/{owner}/{repo}/releases/latest")
+    response = request.urlopen(
+        f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
+    )
     data = json.loads(response.read())
     return dataclass_from_dict(Repo, data)
 
@@ -34,36 +36,40 @@ def list_releases(owner: str, repo: str) -> List[Repo]:
     return [dataclass_from_dict(Repo, item) for item in data]
 
 
-def template(variant: str = 'provider', select_version: bool = False):
+def template(variant: str = "provider", select_version: Union[bool, str] = False):
     yield f"YA_INSTALLER_VARIANT={variant}"
-    if select_version:
-        versions = list_releases('golemfactory', 'yagna')[:3]
-        yield 'select_version() {'
+    if select_version == True:
+        versions = list_releases("golemfactory", "yagna")[:5]
+        yield "select_version() {"
         yield '  echo "available versions:"'
         for (i, version) in enumerate(versions):
             yield f'  echo "{i}) {version.name}"'
-        yield '  while true; do'
+        yield "  while true; do"
         yield '    read -r -u 2 -p "Select version: " ANS || exit 1'
         yield '    case "$ANS" in'
         for (i, version) in enumerate(versions):
-            ver_name = version.tag_name.lstrip('pre-rel-').lstrip('v')
-            yield f'    {i})'
+            ver_name = version.tag_name.lstrip("pre-rel-").lstrip("v")
+            yield f"    {i})"
             yield f'    YA_INSTALLER_COREV="{ver_name}"'
             yield f'    YA_INSTALLER_CORE="{version.tag_name}"'
-            yield '     return'
-            yield ';;'
-        yield '    esac'
-        yield '  done'
-        yield '}'
-        yield 'select_version || exit 1'
+            yield "     return"
+            yield ";;"
+        yield "    esac"
+        yield "  done"
+        yield "}"
+        yield "select_version || exit 1"
     else:
-        version = latest_release('golemfactory', 'yagna')
-        ver_name = version.tag_name.lstrip('pre-rel-').lstrip('v')
-        yield 'YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-' + ver_name +'}"'
-        yield 'YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-' + version.tag_name + '}"'
+        last_version: str = (
+            latest_release("golemfactory", "yagna").tag_name
+            if not isinstance(select_version, str)
+            else select_version
+        )
+        ver_name = last_version.lstrip("pre-rel-").lstrip("v")
+        yield 'YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-' + ver_name + '}"'
+        yield 'YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-' + last_version + '}"'
 
 
-def emit_installer(variant: str = 'provider', select_version: bool = False):
+def emit_installer(variant: str = "provider", select_version: Union[bool, str] = False):
     with open("installer.sh", "r") as f:
         in_template = False
         for line in f.readlines():
@@ -78,16 +84,16 @@ def emit_installer(variant: str = 'provider', select_version: bool = False):
                 yield line.rstrip()
 
 
-def gen_installer(variant: str = 'provider', select_version: bool = False):
-    prefix = 'dist/dev/' if select_version else 'dist/'
-    name = f'as-{variant}'
-    print(f' generating {prefix}{name}')
-    with open(f'{prefix}{name}', 'wt') as f:
-        f.writelines((l + '\n' for l in emit_installer(variant, select_version)))
+def gen_installer(variant: str = "provider", select_version: Union[bool, str] = False):
+    prefix = "dist/dev/" if select_version == True else "dist/"
+    name = f"as-{variant}"
+    print(f" generating {prefix}{name}")
+    with open(f"{prefix}{name}", "wt") as f:
+        f.writelines((l + "\n" for l in emit_installer(variant, select_version)))
 
 
-if __name__ == '__main__':
-    gen_installer('provider', select_version=True)
-    gen_installer('requestor', select_version=True)
-    gen_installer('provider', select_version=False)
-    gen_installer('requestor', select_version=False)
+if __name__ == "__main__":
+    gen_installer("provider", select_version=True)
+    gen_installer("requestor", select_version=True)
+    gen_installer("provider")
+    gen_installer("requestor", select_version='v0.4.0')
