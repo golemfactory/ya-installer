@@ -1,6 +1,7 @@
-from urllib import request
 from dataclasses import dataclass, fields as datafields
+from pathlib import Path
 from typing import List, Union
+from urllib import request
 import json
 
 
@@ -88,6 +89,7 @@ def gen_installer(variant: str = "provider", select_version: Union[bool, str] = 
     prefix = "dist/dev/" if select_version == True else "dist/"
     name = f"as-{variant}"
     print(f" generating {prefix}{name}")
+    Path(f"{prefix}").mkdir(parents=True, exist_ok=True)
     with open(f"{prefix}{name}", "wt") as f:
         f.writelines((l + "\n" for l in emit_installer(variant, select_version)))
 
