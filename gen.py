@@ -64,9 +64,9 @@ def template(variant: str = "provider", select_version: Union[bool, str] = False
             if not isinstance(select_version, str)
             else select_version
         )
-        ver_name = last_version.lstrip("pre-rel-").lstrip("v")
-        yield 'YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-' + ver_name + '}"'
         yield 'YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-' + last_version + '}"'
+        yield 'name=${YA_INSTALLER_CORE#pre-rel-}'
+        yield 'YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-${name#v}}"'
 
 
 def emit_installer(variant: str = "provider", select_version: Union[bool, str] = False):

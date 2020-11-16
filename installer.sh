@@ -5,9 +5,7 @@ set -u
 
 ## @@BEGIN@@
 
-YA_INSTALLER_VARIANT=provider
-YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-0.4.0}"
-YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v${YA_INSTALLER_COREV}}"
+# ignored contents
 
 ## @@END@@
 
