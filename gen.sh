@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SAVED_BRANCH=$(git branch --show-current)
+SAVED_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 git branch -D tmp
 git checkout -b tmp
