@@ -3,9 +3,18 @@
 
 set -u
 
+# strips prefix `pre-rel-` and/or `v` from given tag
+strip_tag() {
+    local tag="$1"
+    local stripped_pre_rel="${tag#pre-rel-}"
+    local stripped_name="${stripped_pre_rel#v}"
+    echo "${stripped_name}"
+}
+
 ## @@BEGIN@@
 
-# ignored contents
+# DO NOT PLACE ANY CODE HERE
+# gen.py will replace content here
 
 ## @@END@@
 
@@ -92,6 +101,7 @@ ensurepath() {
 
     say "" >&2
     say "Add $_required to your path" >&2
+    # shellcheck disable=SC2016
     say 'HINT:   echo '\''export PATH="$HOME/.local/bin:$PATH"'\'" >> ~/${_rcfile}" >&2
     say "Update your current terminal." >&2
     say 'HINT:   export PATH="$HOME/.local/bin:$PATH"' >&2

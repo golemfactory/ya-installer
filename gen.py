@@ -66,8 +66,7 @@ def template(variant: str = "provider", select_version: Union[bool, str] = False
             else select_version
         )
         yield 'YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-' + last_version + '}"'
-        yield 'name=${YA_INSTALLER_CORE#pre-rel-}'
-        yield 'YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-${name#v}}"'
+        yield 'YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-$(strip_tag ${YA_INSTALLER_CORE})}"'
 
 
 def emit_installer(variant: str = "provider", select_version: Union[bool, str] = False):
