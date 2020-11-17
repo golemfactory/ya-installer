@@ -9,7 +9,6 @@ jobs:
         with:
           python-version: '3.8'
       - run: |
-          mkdir dist/dev
           cp setup-kvm.sh dist/
           python gen.py
       - name: Deploy
