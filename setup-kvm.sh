@@ -1,9 +1,9 @@
 #! /bin/bash
 
-u=$1
+user=$1
 
 [ "$UID" = 0 ] || {
-  exec sudo "$0" $USER
+  exec sudo "$0" "$USER"
   exit 1
 }
 
@@ -15,4 +15,4 @@ EOF
 
 chown root:kvm /dev/kvm
 setfacl -m "user:$USER:rw" /dev/kvm
-adduser $u kvm
+adduser "$user" kvm
