@@ -2,15 +2,23 @@
 # shellcheck shell=bash
 
 set -u
-
+ 
 ## @@BEGIN@@
 
-# ignored contents
+YA_INSTALLER_VARIANT=provider
+YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v0.4.1}"
 
 ## @@END@@
 
 YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-0.2.1}
 YA_INSTALLER_VM=${YA_INSTALLER_VM:-0.1.2}
+
+version_name() {
+	local name
+
+	name=${1#pre-rel-}
+	printf "%s" "${name#v}"
+}
 
 say() {
     printf 'golem-installer: %s\n' "$1"
@@ -169,7 +177,7 @@ _dl_head() {
 }
 
 _dl_start() {
-    printf "%-20s %25s " "$1" "$2" >&2
+	printf "%-20s %25s " "$1" "$(version_name "$2")" >&2
 }
 
 _dl_end() {
@@ -184,7 +192,7 @@ download_core() {
     mkdir -p "$YA_INSTALLER_DATA/bundles"
 
     _url="https://github.com/golemfactory/yagna/releases/download/${YA_INSTALLER_CORE}/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
-    _dl_start "golem core" "$YA_INSTALLER_COREV"
+    _dl_start "golem core" "$YA_INSTALLER_CORE"
     (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f - ) || return 1
     _dl_end
     echo -n "$YA_INSTALLER_DATA/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
