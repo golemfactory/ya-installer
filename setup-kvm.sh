@@ -3,8 +3,17 @@
 u=$1
 
 [ "$UID" = 0 ] || {
-  exec sudo "$0" $USER
+  exec sudo "$0" "$USER"
   exit 1
+}
+
+function is_user_ingroup() {
+  local user group
+
+  user="$1"
+  group="$2"
+  getent group "$group" | grep -q "\b${user}\b"
+  return $?
 }
 
 getent group kvm >/dev/null || groupadd kvm
@@ -15,4 +24,5 @@ EOF
 
 chown root:kvm /dev/kvm
 setfacl -m "user:$USER:rw" /dev/kvm
-adduser $u kvm
+is_user_ingroup "$u" kvm || adduser "$u" kvm
+
