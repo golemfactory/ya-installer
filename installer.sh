@@ -10,7 +10,7 @@ set -u
 ## @@END@@
 
 YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-0.2.1}
-YA_INSTALLER_VM=${YA_INSTALLER_VM:-0.1.2}
+YA_INSTALLER_VM=${YA_INSTALLER_VM:-0.2.3}
 
 say() {
     printf 'golem-installer: %s\n' "$1"
