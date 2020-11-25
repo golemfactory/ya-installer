@@ -44,7 +44,7 @@ select_version() {
 }
 select_version || exit 1
 
-YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-0.2.1}
+YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-0.2.2}
 YA_INSTALLER_VM=${YA_INSTALLER_VM:-0.2.3}
 
 version_name() {
