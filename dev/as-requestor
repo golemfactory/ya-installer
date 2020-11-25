@@ -6,37 +6,37 @@ set -u
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.5.0-rc.3 #87"
-  echo "1) v0.5.0-495172ea #85"
-  echo "2) v0.5.0-g3e2372e4 #82"
-  echo "3) v0.5.0-pay-typo-fix #79"
-  echo "4) v0.4.1 Golem Provider Sneak Peek Release"
+  echo "0) v0.5.0-rc.5 #89"
+  echo "1) v0.5.0-rc.4 #88"
+  echo "2) v0.5.0-rc.3 #87"
+  echo "3) v0.5.0-495172ea #85"
+  echo "4) v0.5.0-g3e2372e4 #82"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
+    YA_INSTALLER_COREV="0.5.0-rc.5"
+    YA_INSTALLER_CORE="pre-rel-v0.5.0-rc.5"
+     return
+;;
+    1)
+    YA_INSTALLER_COREV="0.5.0-rc.4"
+    YA_INSTALLER_CORE="pre-rel-v0.5.0-rc.4"
+     return
+;;
+    2)
     YA_INSTALLER_COREV="0.5.0-rc.3"
     YA_INSTALLER_CORE="pre-rel-v0.5.0-rc.3"
      return
 ;;
-    1)
+    3)
     YA_INSTALLER_COREV="0.5.0-495172ea"
     YA_INSTALLER_CORE="pre-rel-v0.5.0-495172ea"
      return
 ;;
-    2)
+    4)
     YA_INSTALLER_COREV="0.5.0-g3e2372e4"
     YA_INSTALLER_CORE="pre-rel-v0.5.0-g3e2372e4"
-     return
-;;
-    3)
-    YA_INSTALLER_COREV="0.5.0-pay-typo-fix"
-    YA_INSTALLER_CORE="pre-rel-v0.5.0-pay-typo-fix"
-     return
-;;
-    4)
-    YA_INSTALLER_COREV="0.4.1"
-    YA_INSTALLER_CORE="v0.4.1"
      return
 ;;
     esac
