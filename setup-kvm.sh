@@ -23,6 +23,6 @@ KERNEL=="kvm", GROUP="kvm", MODE="0660"
 EOF
 
 chown root:kvm /dev/kvm
-setfacl -m "user:$USER:rw" /dev/kvm
+setfacl -m "user:$u:rw" /dev/kvm
 is_user_ingroup "$u" kvm || adduser "$u" kvm
 
