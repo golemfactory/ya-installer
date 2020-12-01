@@ -6,7 +6,7 @@ set -u
 YA_INSTALLER_VARIANT=provider
 select_version() {
   echo "available versions:"
-  echo "0) v0.5.0 Towards zero-fees Golem transactions"
+  echo "0) v0.5.0 Golem: Layer 2 Payments. Public Devnet."
   echo "1) v0.5.0-rc.9 #95"
   echo "2) v0.4.1 Golem Provider Sneak Peek Release"
   echo "3) v0.4.0 Decentralized Marketplace"
