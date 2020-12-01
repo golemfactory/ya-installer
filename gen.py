@@ -98,4 +98,4 @@ if __name__ == "__main__":
     gen_installer("provider", select_version=True)
     gen_installer("requestor", select_version=True)
     gen_installer("provider")
-    gen_installer("requestor", select_version='v0.5.0')
+    gen_installer("requestor")
