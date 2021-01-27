@@ -6,37 +6,32 @@ set -u
 YA_INSTALLER_VARIANT=provider
 select_version() {
   echo "available versions:"
-  echo "0) v0.5.0 Golem: Layer 2 Payments. Public Devnet."
-  echo "1) v0.5.0-rc.9 #95"
-  echo "2) v0.4.1 Golem Provider Sneak Peek Release"
-  echo "3) v0.4.0 Decentralized Marketplace"
-  echo "4) v0.3.4-mkt-dece-alpha.0"
+  echo "0) v0.6.0-rc2 #104"
+  echo "1) v0.6.0-rc1 #103"
+  echo "2) v0.6.0-a4 #102"
+  echo "3) v0.5.0-6c643e3d #101"
+  echo "4) v0.6.0-a3 #100"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_COREV="0.5.0"
-    YA_INSTALLER_CORE="v0.5.0"
+    YA_INSTALLER_CORE="pre-rel-v0.6.0-rc2"
      return
 ;;
     1)
-    YA_INSTALLER_COREV="0.5.0-rc.9"
-    YA_INSTALLER_CORE="pre-rel-v0.5.0-rc.9"
+    YA_INSTALLER_CORE="pre-rel-v0.6.0-rc1"
      return
 ;;
     2)
-    YA_INSTALLER_COREV="0.4.1"
-    YA_INSTALLER_CORE="v0.4.1"
+    YA_INSTALLER_CORE="pre-rel-v0.6.0-a4"
      return
 ;;
     3)
-    YA_INSTALLER_COREV="0.4.0"
-    YA_INSTALLER_CORE="v0.4.0"
+    YA_INSTALLER_CORE="pre-rel-v0.5.0-6c643e3d"
      return
 ;;
     4)
-    YA_INSTALLER_COREV="0.3.4-mkt-dece-alpha.0"
-    YA_INSTALLER_CORE="v0.3.4-mkt-dece-alpha.0"
+    YA_INSTALLER_CORE="pre-rel-v0.6.0-a3"
      return
 ;;
     esac
@@ -45,7 +40,7 @@ select_version() {
 select_version || exit 1
 
 YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-0.2.2}
-YA_INSTALLER_VM=${YA_INSTALLER_VM:-0.2.3}
+YA_INSTALLER_VM=${YA_INSTALLER_VM:-0.2.4}
 
 version_name() {
 	local name
