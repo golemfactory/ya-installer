@@ -49,9 +49,7 @@ def template(variant: str = "provider", select_version: Union[bool, str] = False
         yield '    read -r -u 2 -p "Select version: " ANS || exit 1'
         yield '    case "$ANS" in'
         for (i, version) in enumerate(versions):
-            ver_name = version.tag_name.lstrip("pre-rel-").lstrip("v")
             yield f"    {i})"
-            yield f'    YA_INSTALLER_COREV="{ver_name}"'
             yield f'    YA_INSTALLER_CORE="{version.tag_name}"'
             yield "     return"
             yield ";;"
@@ -66,8 +64,6 @@ def template(variant: str = "provider", select_version: Union[bool, str] = False
             else select_version
         )
         yield 'YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-' + last_version + '}"'
-        yield 'name=${YA_INSTALLER_CORE#pre-rel-}'
-        yield 'YA_INSTALLER_COREV="${YA_INSTALLER_COREV:-${name#v}}"'
 
 
 def emit_installer(variant: str = "provider", select_version: Union[bool, str] = False):
