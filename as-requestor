@@ -6,8 +6,8 @@ set -u
 YA_INSTALLER_VARIANT=requestor
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v0.7.3}"
 
-YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-0.2.2}
-YA_INSTALLER_VM=${YA_INSTALLER_VM:-0.2.8}
+YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-v0.2.2}
+YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.2.8}
 
 version_name() {
 	local name
@@ -203,11 +203,11 @@ download_wasi() {
     _ostype="$1"
     test -d "$YA_INSTALLER_DATA/bundles" || mkdir -p "$YA_INSTALLER_DATA/bundles"
 
-    _url="https://github.com/golemfactory/ya-runtime-wasi/releases/download/v${YA_INSTALLER_WASI}/ya-runtime-wasi-${_ostype}-v${YA_INSTALLER_WASI}.tar.gz"
+    _url="https://github.com/golemfactory/ya-runtime-wasi/releases/download/${YA_INSTALLER_WASI}/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}.tar.gz"
     _dl_start "wasi runtime" "$YA_INSTALLER_WASI"
     downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -
     _dl_end
-    echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-wasi-${_ostype}-v${YA_INSTALLER_WASI}"
+    echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}"
 }
 
 download_vm() {
@@ -216,11 +216,11 @@ download_vm() {
     _ostype="$1"
     test -d "$YA_INSTALLER_DATA/bundles" || mkdir -p "$YA_INSTALLER_DATA/bundles"
 
-    _url="https://github.com/golemfactory/ya-runtime-vm/releases/download/v${YA_INSTALLER_VM}/ya-runtime-vm-${_ostype}-v${YA_INSTALLER_VM}.tar.gz"
+    _url="https://github.com/golemfactory/ya-runtime-vm/releases/download/${YA_INSTALLER_VM}/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}.tar.gz"
     _dl_start "vm runtime" "$YA_INSTALLER_VM"
     (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -) || err "failed to download $_url"
     _dl_end
-    echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-vm-${_ostype}-v${YA_INSTALLER_VM}"
+    echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}"
 }
 
 
