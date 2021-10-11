@@ -6,32 +6,32 @@ set -u
 YA_INSTALLER_VARIANT=provider
 select_version() {
   echo "available versions:"
-  echo "0) v0.8.0-rc4 #169"
-  echo "1) v0.8.0-rc3 #168"
-  echo "2) v0.7.4-rc1 #167"
-  echo "3) v0.8.0-rc2 #166"
-  echo "4) v0.8.0-rc1 #165"
+  echo "0) v0.8.0 Juliana"
+  echo "1) None"
+  echo "2) v0.8.0-rc8 #174"
+  echo "3) v0.8.0-rc7 #172"
+  echo "4) v0.8.0-rc6 #171"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc4"
+    YA_INSTALLER_CORE="v0.8.0"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc3"
+    YA_INSTALLER_CORE="v0.4.0-alpha5"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.7.4-rc1"
+    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc8"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc2"
+    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc7"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc1"
+    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc6"
      return
 ;;
     esac
@@ -40,7 +40,7 @@ select_version() {
 select_version || exit 1
 
 YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-v0.2.2}
-YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.2.8}
+YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.2.9}
 
 version_name() {
 	local name
