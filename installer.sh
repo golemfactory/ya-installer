@@ -290,6 +290,8 @@ main() {
     install_bins "$_src_core" "$YA_INSTALLER_BIN"
     if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
       install_plugins "$_src_core/plugins" "$YA_INSTALLER_LIB"
+      # Cleanup core plugins to make ya-provider use ~/.local/lib/yagna/plugins
+      rm -rf "$_src_core/plugins"
       install_plugins "$_src_wasi" "$YA_INSTALLER_LIB"
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
       (
