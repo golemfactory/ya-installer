@@ -124,7 +124,7 @@ check_subsidy_terms_of_use() {
     cat <<EOF >&2
 
 By installing & running this software you declare that you have read, understood and hereby accept the disclaimer and
-privacy warning found at https://handbook.golem.network/see-also/terms
+privacy warning found at https://handbook.golem.network/see-also/provider-subsidy-terms
 
 EOF
     check_terms_accepted "$YA_INSTALLER_DATA/terms" "subsidy-01.tag"
