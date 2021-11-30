@@ -120,31 +120,46 @@ EOF
     check_terms_accepted "$YA_INSTALLER_DATA/terms" "testnet-01.tag"
 }
 
-check_subsidy_terms_of_use() {
+check_provider_terms_of_use() {
+    local _dir="$YA_INSTALLER_DATA/terms"
+
     cat <<EOF >&2
 
-By installing & running this software you declare that you have read, understood and hereby accept the disclaimer and
-privacy warning found at https://handbook.golem.network/see-also/provider-subsidy-terms
+By installing & running this software you declare that you have read, understood and hereby accept the disclaimers and
+privacy warnings found at
+  https://handbook.golem.network/see-also/terms
+and
+  https://handbook.golem.network/see-also/provider-subsidy-terms
 
 EOF
-    check_terms_accepted "$YA_INSTALLER_DATA/terms" "subsidy-01.tag"
+    check_terms_accepted "$YA_INSTALLER_DATA/terms" "testnet-01.tag" "subsidy-01.tag"
 }
 
 check_terms_accepted() {
     local _tagdir="$1"
-    local _tag="$_tagdir/$2"
+    local _tags=${@:2}
 
-    test -f "$_tag" && return
-    while test ! -f "$_tag"; do
+    files_exist "$_tagdir" $_tags && return
+    while ! files_exist "$_tagdir" $_tags; do
         read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
         if [ "$ANS" = "yes" ]; then
-            mkdir -p "$_tagdir" && touch "$_tag"
+            mkdir -p "$_tagdir"
+            for _tag in $_tags; do
+                touch "$_tagdir/$_tag"
+            done
         elif [ "$ANS" = "no" ]; then
             exit 1
         else
             say "wrong answer: '$ANS'"
         fi
     done
+}
+
+files_exist() {
+    for _file in ${@:2}; do
+        test ! -f "$1/$_file" && return 1
+    done
+    return 0
 }
 
 detect_dist() {
@@ -285,9 +300,10 @@ main() {
     need_cmd rm
     need_cmd rmdir
 
-    check_terms_of_use
     if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
-      check_subsidy_terms_of_use
+      check_provider_terms_of_use
+    else
+      check_terms_of_use
     fi
 
     say "installing to $YA_INSTALLER_BIN"
