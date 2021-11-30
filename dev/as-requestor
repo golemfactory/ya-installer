@@ -6,32 +6,32 @@ set -u
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.8.0 Juliana"
-  echo "1) None"
-  echo "2) v0.8.0-rc8 #174"
-  echo "3) v0.8.0-rc7 #172"
-  echo "4) v0.8.0-rc6 #171"
+  echo "0) v0.9.0-rc4 #179"
+  echo "1) v0.9.0-rc3 #178"
+  echo "2) v0.9.0-rc2 #177"
+  echo "3) v0.9.0-rc1 #176"
+  echo "4) v0.8.0 Juliana"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="v0.8.0"
+    YA_INSTALLER_CORE="pre-rel-v0.9.0-rc4"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="v0.4.0-alpha5"
+    YA_INSTALLER_CORE="pre-rel-v0.9.0-rc3"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc8"
+    YA_INSTALLER_CORE="pre-rel-v0.9.0-rc2"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc7"
+    YA_INSTALLER_CORE="pre-rel-v0.9.0-rc1"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.8.0-rc6"
+    YA_INSTALLER_CORE="v0.8.0"
      return
 ;;
     esac
@@ -319,6 +319,8 @@ main() {
     install_bins "$_src_core" "$YA_INSTALLER_BIN"
     if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
       install_plugins "$_src_core/plugins" "$YA_INSTALLER_LIB"
+      # Cleanup core plugins to make ya-provider use ~/.local/lib/yagna/plugins
+      rm -rf "$_src_core/plugins"
       install_plugins "$_src_wasi" "$YA_INSTALLER_LIB"
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
       (
