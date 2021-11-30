@@ -140,29 +140,15 @@ YA_INSTALLER_BIN=${YA_INSTALLER_BIN:-$(autodetect_bin)}
 YA_INSTALLER_LIB=${YA_INSTALLER_LIB:-$HOME/.local/lib/yagna}
 
 check_terms_of_use() {
+    local _tagdir="$YA_INSTALLER_DATA/terms"
+    local _tag="$_tagdir/testnet-01.tag"
+
     cat <<EOF >&2
 
 By installing & running this software you declare that you have read, understood and hereby accept the disclaimer and
 privacy warning found at https://handbook.golem.network/see-also/terms
 
 EOF
-    check_terms_accepted "$YA_INSTALLER_DATA/terms" "testnet-01.tag"
-}
-
-check_subsidy_terms_of_use() {
-    cat <<EOF >&2
-
-By installing & running this software you declare that you have read, understood and hereby accept the disclaimer and
-privacy warning found at https://handbook.golem.network/see-also/provider-subsidy-terms
-
-EOF
-    check_terms_accepted "$YA_INSTALLER_DATA/terms" "subsidy-01.tag"
-}
-
-check_terms_accepted() {
-    local _tagdir="$1"
-    local _tag="$_tagdir/$2"
-
     test -f "$_tag" && return
     while test ! -f "$_tag"; do
         read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
@@ -313,12 +299,7 @@ main() {
     need_cmd mkdir
     need_cmd rm
     need_cmd rmdir
-
     check_terms_of_use
-    if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
-      check_subsidy_terms_of_use
-    fi
-
     say "installing to $YA_INSTALLER_BIN"
 
     test -d "$YA_INSTALLER_BIN" || mkdir -p "$YA_INSTALLER_BIN"
