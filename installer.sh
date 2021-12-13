@@ -179,6 +179,9 @@ detect_dist() {
         x86_64 | x86-64 | x64 | amd64)
             _cputype=x86_64
             ;;
+        arm64 | aarch64)
+            _cputype=aarch64
+            ;;
         *)
             err "invalid cputype: $_cputype"
             ;;
