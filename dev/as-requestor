@@ -6,32 +6,32 @@ set -u
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.9.2 Gentle Sun"
-  echo "1) v0.9.2-rc3 #190"
-  echo "2) v0.9.1 Human Solidarity"
-  echo "3) v0.9.1-rc2 #188"
-  echo "4) v0.9.1-rc1 #187"
+  echo "0) v0.10.0-rc18 #209"
+  echo "1) v0.10.0-rc17 #208"
+  echo "2) v0.10.0-rc16 #207"
+  echo "3) v0.10.0-rc15 #206"
+  echo "4) v0.10.0-rc14 #205"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="v0.9.2"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc18"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.9.2-rc3"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc17"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="v0.9.1"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc16"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.9.1-rc2"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc15"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.9.1-rc1"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc14"
      return
 ;;
     esac
@@ -147,21 +147,6 @@ privacy warning found at https://handbook.golem.network/see-also/terms
 
 EOF
     check_terms_accepted "$YA_INSTALLER_DATA/terms" "testnet-01.tag"
-}
-
-check_provider_terms_of_use() {
-    local _dir="$YA_INSTALLER_DATA/terms"
-
-    cat <<EOF >&2
-
-By installing & running this software you declare that you have read, understood and hereby accept the disclaimers and
-privacy warnings found at
-  https://handbook.golem.network/see-also/terms
-and
-  https://handbook.golem.network/see-also/provider-subsidy-terms
-
-EOF
-    check_terms_accepted "$YA_INSTALLER_DATA/terms" "testnet-01.tag" "subsidy-01.tag"
 }
 
 check_terms_accepted() {
@@ -294,7 +279,7 @@ install_bins() {
       _ln="cp"
       test -w "$_dest" || {
         _ln="sudo cp"
-        say "to install to $_dest, root priviliges required"
+        say "to install to $_dest, root privileges required"
       }
     else
       _ln="ln -sf"
@@ -329,11 +314,7 @@ main() {
     need_cmd rm
     need_cmd rmdir
 
-    if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
-      check_provider_terms_of_use
-    else
-      check_terms_of_use
-    fi
+    check_terms_of_use
 
     say "installing to $YA_INSTALLER_BIN"
 
