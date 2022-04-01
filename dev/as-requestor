@@ -6,32 +6,32 @@ set -u
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.10.0-rc18 #209"
-  echo "1) v0.10.0-rc17 #208"
-  echo "2) v0.10.0-rc16 #207"
-  echo "3) v0.10.0-rc15 #206"
-  echo "4) v0.10.0-rc14 #205"
+  echo "0) v0.10.0-reputation-2 #214"
+  echo "1) v0.10.0-reputation #212"
+  echo "2) v0.10.0-rc20 #211"
+  echo "3) v0.10.0-rc19 #210"
+  echo "4) v0.10.0-rc18 #209"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc18"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-reputation-2"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc17"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-reputation"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc16"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc20"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc15"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc19"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc14"
+    YA_INSTALLER_CORE="pre-rel-v0.10.0-rc18"
      return
 ;;
     esac
