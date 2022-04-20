@@ -316,6 +316,7 @@ main() {
       )
     fi
 
+if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
 #golemsp-systemd-updater.sh
 #v1.0
 #installs or updates golemsp.service file in systemd to allow for prefered golemsp state to persist across system reboots
@@ -402,6 +403,7 @@ EOF"
      echo -e "\003[0;91mError -  Failed Install\033[0m"
      echo " "
      echo " "
+fi
 fi
 
     ensurepath "$YA_INSTALLER_BIN"
