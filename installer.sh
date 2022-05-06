@@ -316,35 +316,59 @@ main() {
       )
     fi
 
-if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
+    ensurepath "$YA_INSTALLER_BIN"
+
 #golemsp-systemd-updater.sh
-#v1.0
+#v1.05
 #installs or updates golemsp.service file in systemd to allow for prefered golemsp state to persist across system reboots
-#alternatively by selecting no in the updater, it will give you the option of removing the systemd golemsp.service
 #
-if command -v "$HOME/.local/bin/golemsp" >/dev/null; then
-  if command -v "$systemctl" >/dev/null; then
+#
+
+if [ ! -f "$HOME/.local/bin/golemsp" ]; then
+     echo " "
+     echo -e "\033[0;91mError -  GolemSP binary not found\033[0m"
+     echo -e "\033[0;91mError -  Systemd Service Failed Install\033[0m"
+     echo " "
+     echo " "
+else
+  if [ ! -f "/usr/bin/systemctl" ]; then
     echo " "
     echo -e "\033[0;91mSystemd not found, GolemSP service not installed.\033[0m"
     echo " "
-  exit
   else
    echo " "
    echo " "
-   echo "Install or Update GolemSP systemd service? [y|n]"
+   echo "Install or Update GolemSP systemd service? [y|n] press enter for [yes]"
    echo " "
    read -rsn1 yn
-    if [[ ${yn} = [Yy]* ]]; then
-      sudo bash -c "cat << 'EOF' > /etc/systemd/system/golemsp.service
+    if [[ ! ${yn} = [Nn]* ]]; then
+#delete old golemsp.service here
+	  if [[ -f "/etc/systemd/system/golemsp.service" ]]; then
+			sudo systemctl disable golemsp
+			sudo rm /etc/systemd/system/golemsp.service
+#script terminates to early in this case....
+      fi   
+#User is added to kvm group, without it service will not start without user login.
+      sudo usermod -a -G kvm $USER
+#writes the service
+      sudo bash -c "cat << 'EOF' > /usr/lib/systemd/system/golemsp.service
 
+#Installed by golemsp-systemd.updater.sh v1.05
 [Unit]
  Description=Start GolemSP
- After=network.target
- StartLimitIntervalSec=0
+ After=network-online.target
+#Makes sure GolemSP isn't started before KVM
+ Requires=open-vm-tools.service
+ After=open-vm-tools.service
+
 
 [Service]
  Type=simple
- Restart=on-abnormal
+ Restart=on-failure
+#Default RestartSec is 100ms and can take up measurable system resources
+ RestartSec=900
+#Keeps service from timing out.
+ TimeoutSec=600
  User=$USER
  ExecStart=$HOME/.local/bin/golemsp run
  Environment=PATH=$HOME/.local/bin/
@@ -359,9 +383,11 @@ EOF"
                  sudo systemctl enable golemsp
                    echo " "
                    echo -e "\033[0;32mSystemd Service successfuly installed for GolemSP.\033[0m"
+                   echo " "
                    echo "You can now enable or disable GolemSP on system startup using command."
                    echo " "
                    echo "       systemctl [enable|disable] golemsp"
+                   echo " "
                    echo " "
                    echo " "
                    echo "Start or stop the golemsp service for the current session using command."
@@ -369,44 +395,25 @@ EOF"
                    echo "       systemctl [start|stop] golemsp"
                    echo " "
                    echo " "
-                   echo "For more information."
+                   echo " "
+                   echo "More useful commands."
                    echo " "
                    echo "       systemctl --help"
                    echo " "
-                   echo " "
-                   echo "Golem Service Provider."
-                   echo " "
                    echo "       golemsp --help"
                    echo " "
+                   echo "       journalctl -u golemsp --lines=20 --follow"
                    echo " "
-    else
-      if [[ -f /etc/systemd/system/golemsp.service ]]; then
-        echo " "
-        echo "Found existing GolemSP systemd service would you like to remove it? [y|n]"
-        echo " "
-        echo " "
-        read -rsn1 yn
-        if [[ ${yn} = [Yy]* ]]; then
-
-          sudo systemctl disable golemsp.service
-          sudo rm -f /etc/systemd/system/golemsp.service
-          echo " "
-          echo "GolemSP systemd service removed."
-          echo " "
-        fi
-      fi
-    fi
+                   echo " "
+				   
+	
+	fi
+	
+     
+  
   fi
-  else
-     echo " "
-     echo -e "\033[0;91mError -  GolemSP binary not found\033[0m"
-     echo -e "\003[0;91mError -  Failed Install\033[0m"
-     echo " "
-     echo " "
 fi
-fi
-
-    ensurepath "$YA_INSTALLER_BIN"
+#golemsp-systemd-updater.sh end
 }
 
 main "$@" || exit 1
