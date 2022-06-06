@@ -360,7 +360,9 @@ main() {
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
       (
         PATH="$YA_INSTALLER_BIN:$PATH"
-        test "${BATCH_MODE}" = "no" && RUST_LOG=error "$_src_core/golemsp" setup <&2
+        if test "${BATCH_MODE}" = "no"; then
+          RUST_LOG=error "$_src_core/golemsp" setup <&2 || exit 1
+        fi
       )
     fi
 
