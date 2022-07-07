@@ -254,30 +254,44 @@ download_vm() {
     printf '%s' "${YA_INSTALLER_DATA}/bundles/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}"
 }
 
+run_for_destination_and_all_files_in_source() {
+    local _src _dest _file
+    _src="${1}"
+    shift
+    _dest="${1}"
+    shift
+    if [ -z "${*}" ]; 
+    then
+        exit 1
+    else
+        for _file in "${_src}"/*
+        do
+            if [ -f "${_file}" ] && [ -x "${_file}" ]; then
+               (
+                   #set -x
+                   "${@}" "${_file}" "${_dest}"; 
+               )
+            fi
+        done
+    fi
+}
 
 install_bins() {
-    local _bin _dest _ln
+    local _src _dest
 
+    _src="${1}"
     _dest="${2}"
     if [ "${_dest}" = "/usr/bin" ] || [ "${_dest}" = "/usr/local/bin" ]; then
-      _ln="cp"
-      test -w "${_dest}" || {
-        _ln="sudo cp"
+      if test -w "${_dest}"; 
+      then
+        run_for_destination_and_all_files_in_source "${_src}" "${_dest}" cp --
+      else
         say "to install to ${_dest}, root privileges required"
-      }
+        run_for_destination_and_all_files_in_source "${_src}" "${_dest}" sudo cp --
+      fi
     else
-      _ln="ln -sf"
+      run_for_destination_and_all_files_in_source "${_src}" "${_dest}" ln -sf --
     fi
-
-    for _bin in "${1}"/*
-    do
-        if [ -f "${_bin}" ] && [ -x "${_bin}" ]; then
-           (
-               #set -x
-               ${_ln} -- "${_bin}" "${_dest}"; 
-           )
-        fi
-    done
 }
 
 install_plugins() {
