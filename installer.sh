@@ -122,14 +122,13 @@ EOF
 
 check_terms_accepted() {
     local _tagdir="$1"
-    local _tags=${@:2}
 
-    files_exist "$_tagdir" $_tags && return
-    while ! files_exist "$_tagdir" $_tags; do
+    files_exist "$_tagdir" "${@:2}" && return
+    while ! files_exist "$_tagdir" "${@:2}"; do
         read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
         if [ "$ANS" = "yes" ]; then
             mkdir -p "$_tagdir"
-            for _tag in $_tags; do
+            for _tag in "${@:2}"; do
                 touch "$_tagdir/$_tag"
             done
         elif [ "$ANS" = "no" ]; then
@@ -141,7 +140,7 @@ check_terms_accepted() {
 }
 
 files_exist() {
-    for _file in ${@:2}; do
+    for _file in "${@:2}"; do
         test ! -f "$1/$_file" && return 1
     done
     return 0
