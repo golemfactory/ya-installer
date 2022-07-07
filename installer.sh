@@ -35,7 +35,8 @@ err() {
 }
 
 need_cmd() {
-    if ! check_cmd "${1}"; then
+    if ! check_cmd "${1}"; 
+    then
         err "need '${1}' (command not found)"
     fi
 }
@@ -45,24 +46,32 @@ check_cmd() {
 }
 
 assert_nz() {
-    if [ -z "${1}" ]; then err "assert_nz ${2}"; fi
+    if [ -z "${1}" ]; 
+    then 
+        err "assert_nz ${2}"; 
+    fi
 }
 
 downloader() {
     local _dld
-    if check_cmd curl; then
+    if check_cmd curl; 
+    then
         _dld=curl
-    elif check_cmd wget; then
+    elif check_cmd wget; 
+    then
         _dld=wget
     else
         _dld='curl or wget' # to be used in error message of need_cmd
     fi
 
-    if [ "${1}" = --check ]; then
+    if [ "${1}" = --check ]; 
+    then
         need_cmd "${_dld}"
-    elif [ "${_dld}" = curl ]; then
+    elif [ "${_dld}" = curl ]; 
+    then
         curl --proto '=https' --silent --show-error --fail --location "${1}" --output "${2}"
-    elif [ "${_dld}" = wget ]; then
+    elif [ "${_dld}" = wget ]; 
+    then
         wget -O "${2}" --https-only "${1}"
     else
         err "Unknown downloader"   # should not reach here
@@ -74,7 +83,8 @@ autodetect_bin() {
 
     _current_bin="$(command -v yagna)"
 
-    if [ -z "${_current_bin}" ]; then
+    if [ -z "${_current_bin}" ]; 
+    then
         printf '%s' "${HOME}/.local/bin"
     else
         dirname -- "${_current_bin}"
@@ -89,7 +99,8 @@ ensurepath() {
     IFS=":"
     for _path in ${PATH}
     do
-        if [ "${_path}" = "${_required}" ]; then
+        if [ "${_path}" = "${_required}" ]; 
+        then
             IFS="${_save_ifs}" || exit "${?}"
             return "${?}"
         fi
@@ -131,12 +142,14 @@ check_terms_accepted() {
     files_exist "${_tagdir}" "${@:2}" && return "${?}"
     while ! files_exist "${_tagdir}" "${@:2}"; do
         read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " terms_and_conditions_answer || exit "${?}"
-        if [ "${terms_and_conditions_answer}" = "yes" ]; then
+        if [ "${terms_and_conditions_answer}" = "yes" ]; 
+        then
             mkdir -p "${_tagdir}"
             for _tag in "${@:2}"; do
                 touch "${_tagdir}/${_tag}"
             done
-        elif [ "${terms_and_conditions_answer}" = "no" ]; then
+        elif [ "${terms_and_conditions_answer}" = "no" ]; 
+        then
             exit 1
         else
             say "wrong answer: '${terms_and_conditions_answer}'"
@@ -157,7 +170,8 @@ detect_dist() {
     _ostype="$(uname -s)"
     _cputype="$(uname -m)"
 
-    if [ "${_ostype}" = Darwin ] && [ "${_cputype}" = i386 ]; then
+    if [ "${_ostype}" = Darwin ] && [ "${_cputype}" = i386 ]; 
+    then
         # Darwin `uname -m` lies
         local _sysctl_output
         if _sysctl_output="$(sysctl hw.optional.x86_64)" && grep -q -e ': 1' <<END
@@ -266,7 +280,8 @@ run_for_destination_and_all_files_in_source() {
     else
         for _file in "${_src}"/*
         do
-            if [ -f "${_file}" ] && [ -x "${_file}" ]; then
+            if [ -f "${_file}" ] && [ -x "${_file}" ]; 
+            then
                (
                    #set -x
                    "${@}" "${_file}" "${_dest}"; 
@@ -281,7 +296,8 @@ install_bins() {
 
     _src="${1}"
     _dest="${2}"
-    if [ "${_dest}" = "/usr/bin" ] || [ "${_dest}" = "/usr/local/bin" ]; then
+    if [ "${_dest}" = "/usr/bin" ] || [ "${_dest}" = "/usr/local/bin" ]; 
+    then
       if test -w "${_dest}"; 
       then
         run_for_destination_and_all_files_in_source "${_src}" "${_dest}" cp --
@@ -324,16 +340,19 @@ main() {
 
     _dl_head
     _src_core=$(download_core "${_ostype}" "${YA_INSTALLER_VARIANT}") || return "${?}"
-    if [ "${YA_INSTALLER_VARIANT}" = "provider" ]; then
+    if [ "${YA_INSTALLER_VARIANT}" = "provider" ]; 
+    then
       _src_wasi=$(download_wasi "${_ostype}")
-      if [ "${_ostype}" = "linux" ]; then
+      if [ "${_ostype}" = "linux" ]; 
+      then
         _src_vm=$(download_vm "${_ostype}") || exit "${?}"
 
       fi
     fi
 
     install_bins "${_src_core}" "${YA_INSTALLER_BIN}"
-    if [ "${YA_INSTALLER_VARIANT}" = "provider" ]; then
+    if [ "${YA_INSTALLER_VARIANT}" = "provider" ]; 
+    then
       install_plugins "${_src_core}/plugins" "${YA_INSTALLER_LIB}"
       # Cleanup core plugins to make ya-provider use ~/.local/lib/yagna/plugins
       rm -rf "${_src_core}/plugins"
