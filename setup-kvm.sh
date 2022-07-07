@@ -3,20 +3,20 @@
 u=${1}
 
 [ "${UID}" = 0 ] || {
-  exec sudo "${0}" "${USER}"
-  exit "${?}"
+	exec sudo "${0}" "${USER}"
+	exit "${?}"
 }
 
 function is_user_ingroup() {
-  local user group
+	local user group
 
-  user="${1}"
-  group="${2}"
-  local getent_output
-  getent_output="$(getent group "${group}")" && grep -q "\b${user}\b" <<END
+	user="${1}"
+	group="${2}"
+	local getent_output
+	getent_output="$(getent group "${group}")" && grep -q "\b${user}\b" <<END
 ${getent_output}
 END
-  return ${?}
+	return ${?}
 }
 
 getent group kvm >/dev/null || groupadd kvm
