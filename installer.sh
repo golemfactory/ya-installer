@@ -75,7 +75,7 @@ autodetect_bin() {
     _current_bin="$(command -v yagna)"
 
     if [ -z "${_current_bin}" ]; then
-        echo -n "${HOME}/.local/bin"
+        printf '%s' "${HOME}/.local/bin"
     else
         dirname -- "${_current_bin}"
     fi
@@ -105,7 +105,7 @@ ensurepath() {
 
     say "" >&2
     say "Add ${_required} to your path" >&2
-    say 'HINT:   echo '\''export PATH="'"\${HOME}"'/.local/bin:'"\${PATH}"'"'\'" >> ~/${_rcfile}" >&2
+    say 'HINT:   printf '\''%s\n'\'' '\''export PATH="'"\${HOME}"'/.local/bin:'"\${PATH}"'"'\'" >> ~/${_rcfile}" >&2
     say "Update your current terminal." >&2
     say 'HINT:   export PATH="'"\${HOME}"'/.local/bin:'"\${PATH}"'"' >&2
     exit 1
@@ -189,7 +189,7 @@ END
         *)
             err "invalid os type: ${_ostype}"
     esac
-    echo -n "${_ostype}"
+    printf '%s' "${_ostype}"
 }
 
 _dl_head() {
@@ -222,7 +222,7 @@ download_core() {
     local _exit_code
     { { { pushd "${YA_INSTALLER_DATA}/bundles" || exit "${?}"; } && { downloader "${_url}" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; } || return "${?}"; } && { popd || exit "${?}"; }; 
     _dl_end
-    echo -n "${YA_INSTALLER_DATA}/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
+    printf '%s' "${YA_INSTALLER_DATA}/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
 }
 
 #
@@ -237,7 +237,7 @@ download_wasi() {
     local _exit_code
     { { { pushd "${YA_INSTALLER_DATA}/bundles" || exit "${?}"; } && { downloader "${_url}" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; }; } && { popd || exit "${?}"; }; 
     _dl_end
-    echo -n "${YA_INSTALLER_DATA}/bundles/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}"
+    printf '%s' "${YA_INSTALLER_DATA}/bundles/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}"
 }
 
 download_vm() {
@@ -251,7 +251,7 @@ download_vm() {
     local _exit_code
     { { { pushd "${YA_INSTALLER_DATA}/bundles" || exit "${?}"; } && { downloader "${_url}" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; } || err "failed to download ${_url}"; } && { popd || exit "${?}"; }; 
     _dl_end
-    echo -n "${YA_INSTALLER_DATA}/bundles/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}"
+    printf '%s' "${YA_INSTALLER_DATA}/bundles/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}"
 }
 
 
@@ -272,8 +272,10 @@ install_bins() {
     for _bin in "${1}"/*
     do
         if [ -f "${_bin}" ] && [ -x "${_bin}" ]; then
-           #echo -- ${_ln} -- "${_bin}" "${_dest}"
-           ${_ln} -- "${_bin}" "${_dest}"
+           (
+               #set -x
+               ${_ln} -- "${_bin}" "${_dest}"; 
+           )
         fi
     done
 }
