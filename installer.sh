@@ -80,16 +80,16 @@ ensurepath() {
     local _required _save_ifs _path _rcfile
 
     _required="${1}"
-    _save_ifs="${IFS}"
+    _save_ifs="${IFS}" || exit 1
     IFS=":"
     for _path in ${PATH}
     do
         if [ "${_path}" = "${_required}" ]; then
-            IFS="${_save_ifs}"
+            IFS="${_save_ifs}" || exit 1
             return
         fi
     done
-    IFS="${_save_ifs}"
+    IFS="${_save_ifs}" || exit 1
 
     case "${SHELL:-/bin/sh}" in
       */bash) _rcfile=".bashrc" ;;
