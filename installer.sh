@@ -100,9 +100,9 @@ ensurepath() {
 
     say "" >&2
     say "Add $_required to your path" >&2
-    say 'HINT:   echo '\''export PATH="$HOME/.local/bin:$PATH"'\'" >> ~/${_rcfile}" >&2
+    say 'HINT:   echo '\''export PATH="'"\$HOME"'/.local/bin:'"\$PATH"'"'\'" >> ~/${_rcfile}" >&2
     say "Update your current terminal." >&2
-    say 'HINT:   export PATH="$HOME/.local/bin:$PATH"' >&2
+    say 'HINT:   export PATH="'"\$HOME"'/.local/bin:'"\$PATH"'"' >&2
     exit 1
 }
 
