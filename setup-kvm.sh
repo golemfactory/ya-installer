@@ -4,7 +4,7 @@ u=${1}
 
 [ "${UID}" = 0 ] || {
   exec sudo "${0}" "${USER}"
-  exit 1
+  exit "${?}"
 }
 
 function is_user_ingroup() {

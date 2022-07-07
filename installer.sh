@@ -25,8 +25,13 @@ say() {
 }
 
 err() {
+    exit_code="${?}"
+    if [ "${exit_code}" = 0 ]; 
+    then
+        exit_code=1
+    fi
     say "${1}" >&2
-    exit 1
+    exit "${exit_code}"
 }
 
 need_cmd() {
@@ -71,25 +76,25 @@ autodetect_bin() {
 
     if [ -z "${_current_bin}" ]; then
         echo -n "${HOME}/.local/bin"
-        return
+    else
+        dirname -- "${_current_bin}"
     fi
-    dirname "${_current_bin}"
 }
 
 ensurepath() {
     local _required _save_ifs _path _rcfile
 
     _required="${1}"
-    _save_ifs="${IFS}" || exit 1
+    _save_ifs="${IFS}" || exit "${?}"
     IFS=":"
     for _path in ${PATH}
     do
         if [ "${_path}" = "${_required}" ]; then
-            IFS="${_save_ifs}" || exit 1
-            return
+            IFS="${_save_ifs}" || exit "${?}"
+            return "${?}"
         fi
     done
-    IFS="${_save_ifs}" || exit 1
+    IFS="${_save_ifs}" || exit "${?}"
 
     case "${SHELL:-/bin/sh}" in
       */bash) _rcfile=".bashrc" ;;
@@ -123,27 +128,27 @@ EOF
 check_terms_accepted() {
     local _tagdir="${1}"
 
-    files_exist "${_tagdir}" "${@:2}" && return
+    files_exist "${_tagdir}" "${@:2}" && return "${?}"
     while ! files_exist "${_tagdir}" "${@:2}"; do
-        read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
-        if [ "${ANS}" = "yes" ]; then
+        read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " terms_and_conditions_answer || exit "${?}"
+        if [ "${terms_and_conditions_answer}" = "yes" ]; then
             mkdir -p "${_tagdir}"
             for _tag in "${@:2}"; do
                 touch "${_tagdir}/${_tag}"
             done
-        elif [ "${ANS}" = "no" ]; then
+        elif [ "${terms_and_conditions_answer}" = "no" ]; then
             exit 1
         else
-            say "wrong answer: '${ANS}'"
+            say "wrong answer: '${terms_and_conditions_answer}'"
         fi
     done
 }
 
 files_exist() {
     for _file in "${@:2}"; do
-        test ! -f "${1}/${_file}" && return 1
+        test -f "${1}/${_file}" || return "${?}"
     done
-    return 0
+    return "${?}"
 }
 
 detect_dist() {
@@ -215,7 +220,7 @@ download_core() {
     _url="https://github.com/golemfactory/yagna/releases/download/${YA_INSTALLER_CORE}/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
     _dl_start "golem core" "${YA_INSTALLER_CORE}"
     local _exit_code
-    { { { pushd "${YA_INSTALLER_DATA}/bundles" || exit "${?}"; } && { downloader "${_url}" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; } || return 1; } && { popd || exit "${?}"; }; 
+    { { { pushd "${YA_INSTALLER_DATA}/bundles" || exit "${?}"; } && { downloader "${_url}" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; } || return "${?}"; } && { popd || exit "${?}"; }; 
     _dl_end
     echo -n "${YA_INSTALLER_DATA}/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
 }
@@ -302,11 +307,11 @@ main() {
     _ostype="$(detect_dist)"
 
     _dl_head
-    _src_core=$(download_core "${_ostype}" "${YA_INSTALLER_VARIANT}") || return 1
+    _src_core=$(download_core "${_ostype}" "${YA_INSTALLER_VARIANT}") || return "${?}"
     if [ "${YA_INSTALLER_VARIANT}" = "provider" ]; then
       _src_wasi=$(download_wasi "${_ostype}")
       if [ "${_ostype}" = "linux" ]; then
-        _src_vm=$(download_vm "${_ostype}") || exit 1
+        _src_vm=$(download_vm "${_ostype}") || exit "${?}"
 
       fi
     fi
@@ -327,4 +332,4 @@ main() {
     ensurepath "${YA_INSTALLER_BIN}"
 }
 
-main "${@}" || exit 1
+main "${@}"
