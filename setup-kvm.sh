@@ -12,7 +12,10 @@ function is_user_ingroup() {
 
   user="$1"
   group="$2"
-  getent group "$group" | grep -q "\b${user}\b"
+  local getent_output
+  getent_output="$(getent group "$group")" && grep -q "\b${user}\b" <<END
+${getent_output}
+END
   return $?
 }
 
