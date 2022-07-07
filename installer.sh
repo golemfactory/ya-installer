@@ -154,7 +154,11 @@ detect_dist() {
 
     if [ "$_ostype" = Darwin ] && [ "$_cputype" = i386 ]; then
         # Darwin `uname -m` lies
-        if sysctl hw.optional.x86_64 | grep -q ': 1'; then
+        local _sysctl_output
+        if _sysctl_output="$(sysctl hw.optional.x86_64)" && grep -q -e ': 1' <<END
+${_sysctl_output}
+END
+        then
             _cputype=x86_64
         fi
     fi
@@ -192,7 +196,9 @@ _dl_head() {
 }
 
 _dl_start() {
-	printf "%-20s %25s " "$1" "$(version_name "$2")" >&2
+	local _version_name
+	_version_name="$(version_name "$2")"
+	printf "%-20s %25s " "$1" "${_version_name}" >&2
 }
 
 _dl_end() {
@@ -208,7 +214,8 @@ download_core() {
 
     _url="https://github.com/golemfactory/yagna/releases/download/${YA_INSTALLER_CORE}/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
     _dl_start "golem core" "$YA_INSTALLER_CORE"
-    (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f - ) || return 1
+    local _exit_code
+    { { { pushd "$YA_INSTALLER_DATA/bundles" || exit "${?}"; } && { downloader "$_url" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; } || return 1; } && { popd || exit "${?}"; }; 
     _dl_end
     echo -n "$YA_INSTALLER_DATA/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
 }
@@ -222,7 +229,8 @@ download_wasi() {
 
     _url="https://github.com/golemfactory/ya-runtime-wasi/releases/download/${YA_INSTALLER_WASI}/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}.tar.gz"
     _dl_start "wasi runtime" "$YA_INSTALLER_WASI"
-    downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -
+    local _exit_code
+    { { { pushd "$YA_INSTALLER_DATA/bundles" || exit "${?}"; } && { downloader "$_url" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; }; } && { popd || exit "${?}"; }; 
     _dl_end
     echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}"
 }
@@ -235,7 +243,8 @@ download_vm() {
 
     _url="https://github.com/golemfactory/ya-runtime-vm/releases/download/${YA_INSTALLER_VM}/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}.tar.gz"
     _dl_start "vm runtime" "$YA_INSTALLER_VM"
-    (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -) || err "failed to download $_url"
+    local _exit_code
+    { { { pushd "$YA_INSTALLER_DATA/bundles" || exit "${?}"; } && { downloader "$_url" "${_url/*\/}" && { tar -xz -f "${_url/*\/}" || { _exit_code="${?}"; rm "${_url/*\/}"; ( exit "${_exit_code}"; ); }; }; }; } || err "failed to download $_url"; } && { popd || exit "${?}"; }; 
     _dl_end
     echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}"
 }
