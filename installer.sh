@@ -3,6 +3,9 @@
 
 set -u
 
+GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
+BATCH_MODE="${BATCH_MODE:-no}"
+
 ## @@BEGIN@@
 
 YA_INSTALLER_VARIANT=provider
@@ -100,8 +103,10 @@ ensurepath() {
 
     say "" >&2
     say "Add $_required to your path" >&2
+    # shellcheck disable=SC2068,SC2016
     say 'HINT:   echo '\''export PATH="$HOME/.local/bin:$PATH"'\'" >> ~/${_rcfile}" >&2
     say "Update your current terminal." >&2
+    # shellcheck disable=SC2068,SC2016
     say 'HINT:   export PATH="$HOME/.local/bin:$PATH"' >&2
     exit 1
 }
@@ -120,18 +125,30 @@ EOF
     check_terms_accepted "$YA_INSTALLER_DATA/terms" "testnet-01.tag"
 }
 
+create_tags() {
+  local _dir="$1"
+  mkdir -p "$_dir"
+  shift
+  local _tag
+  for _tag in "$@"; do
+    touch "${_dir}/${_tag}"
+  done
+}
+
 check_terms_accepted() {
     local _tagdir="$1"
-    local _tags=${@:2}
+    shift
 
-    files_exist "$_tagdir" $_tags && return
-    while ! files_exist "$_tagdir" $_tags; do
-        read -r -u 2 -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
+    [ "$GOLEM_ACCEPT_TOS" = "yes" ] && create_tags "$_tagdir" "$@"
+
+    files_exist "$_tagdir" "$@" && return
+    local _read_opts="-r -u 2"
+    [ "${BASH_VERSION:-no}" = "no" ] && _read_opts=-r
+    while ! files_exist "$_tagdir" "$@"; do
+        # shellcheck disable=SC2162,SC2229
+        read ${_read_opts} -p "Do you accept the terms and conditions? [yes/no]: " ANS || exit 1
         if [ "$ANS" = "yes" ]; then
-            mkdir -p "$_tagdir"
-            for _tag in $_tags; do
-                touch "$_tagdir/$_tag"
-            done
+            create_tags "$_tagdir" "$@"
         elif [ "$ANS" = "no" ]; then
             exit 1
         else
@@ -141,8 +158,10 @@ check_terms_accepted() {
 }
 
 files_exist() {
-    for _file in ${@:2}; do
-        test ! -f "$1/$_file" && return 1
+    local dir=$1
+    shift
+    for _file in "$@"; do
+        test ! -f "$dir/$_file" && return 1
     done
     return 0
 }
@@ -312,7 +331,9 @@ main() {
       test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
       (
         PATH="$YA_INSTALLER_BIN:$PATH"
-        RUST_LOG=error "$_src_core/golemsp" setup <&2
+        if test "${BATCH_MODE}" = "no"; then
+          RUST_LOG=error "$_src_core/golemsp" setup <&2 || exit 1
+        fi
       )
     fi
 
