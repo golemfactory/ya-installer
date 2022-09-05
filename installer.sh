@@ -61,7 +61,7 @@ downloader() {
     elif [ "$_dld" = curl ]; then
         curl --proto '=https' --silent --show-error --fail --location "$1" --output "$2"
     elif [ "$_dld" = wget ]; then
-        wget --https-only "$1" -O "$2"
+        wget -O "$2" --https-only "$1"
     else
         err "Unknown downloader"   # should not reach here
     fi
