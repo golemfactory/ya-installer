@@ -1,0 +1,12 @@
+{
+    "commands": [
+        {
+            "default": true,
+            "versions": ["v0.12"],
+            "add_certs": "ya-provider keystore add $(find $_resources_dir/certs -type f)"
+        },
+        {
+            "versions": ["v0.11", "v0.10", "v0.9", "v0.8", "v0.7", "v0.6", "v0.5", "v0.4", "v0.3"]
+        }
+    ]
+}
