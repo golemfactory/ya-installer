@@ -3,7 +3,9 @@
         {
             "default": true,
             "versions": ["v0.12"],
-            "add_certs": "ya-provider keystore add $(find $_resources_dir/certs -type f)"
+            "add_certs": "ya-provider keystore add $(find $_resources_dir/certs -type f)",
+            "whitelist_regex": "ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\\n' ' ')",
+            "whitelist_strict": "ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\\n' ' ')"
         },
         {
             "versions": ["v0.11", "v0.10", "v0.9", "v0.8", "v0.7", "v0.6", "v0.5", "v0.4", "v0.3"]

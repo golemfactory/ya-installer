@@ -78,13 +78,13 @@ def setup_provider_template():
         if_or_elif = "if" if first_if else "elif"
         first_if = False
         yield       f"  {if_or_elif} {version_patterns}; then"
-        if 'add_certs' in command:
-            yield   f"    $_bin_dir/{command['add_certs']} >/dev/null 2>&1"
+        if 'add_certs' in command or 'whitelist_regex' in command or 'whitelist_strict' in command:
+            yield   from run_command(command)
         else:
             yield   "    :"
     if default_command != None:
         yield       "  else"
-        yield       f"    ${{_bin_dir}}/{default_command['add_certs']} >/dev/null 2>&1"
+        yield       from run_command(default_command)
     yield           "  fi"
 
 def version_patterns_str(command):
@@ -95,6 +95,14 @@ def version_patterns_str(command):
 
 def version_pattern(version):
     return f"[[ \"${{YA_INSTALLER_CORE}}\" =~ .*{version}.* ]]"
+
+def run_command(command):
+    if 'add_certs' in command:
+        yield f"    $_bin_dir/{command['add_certs']} >/dev/null 2>&1"
+    if 'whitelist_regex' in command:
+        yield f"    $_bin_dir/{command['whitelist_regex']} >/dev/null 2>&1"
+    if 'whitelist_strict' in command:
+        yield f"    $_bin_dir/{command['whitelist_strict']} >/dev/null 2>&1"
 
 def emit_installer(variant: str = "provider", select_version: Union[bool, str] = False):
     with open("installer.sh", "r") as f:
