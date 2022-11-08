@@ -3,7 +3,7 @@
         {
             "default": true,
             "versions": ["v0.12"],
-            "add_certs": "ya-provider keystore add $(find $_resources_dir/certs -type f)",
+            "add_certs": "ya-provider keystore add $(find $_resources_dir/certs -type f --permissions outbound-manifest|unverified-permissions-chain)",
             "whitelist_regex": "ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\\n' ' ')",
             "whitelist_strict": "ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\\n' ' ')"
         },
