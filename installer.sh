@@ -6,12 +6,12 @@ set -u
 GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
 BATCH_MODE="${BATCH_MODE:-no}"
 
-## @@BEGIN@@
+## @@BEGIN_SELECT_VERSION@@
 
 YA_INSTALLER_VARIANT=provider
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v0.4.1}"
 
-## @@END@@
+## @@END_SELECT_VERSION@@
 
 YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-v0.2.2}
 YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.2.13}
@@ -260,6 +260,16 @@ download_vm() {
     echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-vm-${_ostype}-${YA_INSTALLER_VM}"
 }
 
+download_resources() {
+    local _resources_dir _url
+    _resources_dir="$(mktemp -d /tmp/ya_installer_resources.XXXX)"
+    _url="https://github.com/golemfactory/ya-installer-resources/releases/latest/download/resources.tar.gz"
+    _dl_start "Downloading certificates and whitelists" ""
+    (downloader "$_url" - | tar -C "$_resources_dir" -xz -f -) || err "failed to download $_url"
+    [[ -d "$_resources_dir/certs" ]] || mkdir "$_resources_dir/certs"
+    _dl_end
+    echo -n "$_resources_dir"
+}
 
 install_bins() {
     local _bin _dest _ln
@@ -292,6 +302,17 @@ install_plugins() {
   mkdir -p "$_dst"
 
   (cd "$_src" && cp -r ./* "$_dst")
+}
+
+setup_provider() {
+  local _bin_dir _resources_dir
+  _bin_dir="$1"
+  _resources_dir=$(download_resources) || exit 1
+
+## @@BEGIN_SETUP_PROVIDER@@
+## @@END_SETUP_PROVIDER@@
+
+  rm -rf "$_resources_dir"
 }
 
 main() {
@@ -334,6 +355,7 @@ main() {
         if test "${BATCH_MODE}" = "no"; then
           RUST_LOG=error "$_src_core/golemsp" setup <&2 || exit 1
         fi
+        setup_provider "$_src_core"
       )
     fi
 
