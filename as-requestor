@@ -168,12 +168,22 @@ detect_dist() {
     _ostype="$(uname -s)"
     _cputype="$(uname -m)"
 
-    if [ "$_ostype" = Darwin ] && [ "$_cputype" = i386 ]; then
-        # Darwin `uname -m` lies
-        if sysctl hw.optional.x86_64 | grep -q ': 1'; then
-            _cputype=x86_64
+    if [ "$_ostype" = Darwin ]; then
+        if [ "$_cputype" = i386 ]; then
+            # Darwin `uname -m` lies
+            if sysctl hw.optional.x86_64 | grep -q ': 1'; then
+                _cputype=x86_64
+            fi
         fi
+
+        # On macOS M1 we want to run x86 binaries using Rosetta,
+        # because we don't have compatible ARM builds.
+        case "$_cputype" in arm64 | aarch64)
+            _cputype=x86_64
+            ;;
+        esac
     fi
+
 
     case "$_cputype" in
         x86_64 | x86-64 | x64 | amd64)

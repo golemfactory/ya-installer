@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=provider
 select_version() {
   echo "available versions:"
-  echo "0) v0.12.0-rc3 #238"
-  echo "1) v0.12.0-rc2 #237"
-  echo "2) v0.11.0 Hidden Secret"
-  echo "3) v0.12.0-rc1 #235"
-  echo "4) v0.11.0-rc11 #234"
+  echo "0) v0.12.0-blue-rc-1 #240"
+  echo "1) v0.12.0-rc4 #239"
+  echo "2) v0.12.0-rc3 #238"
+  echo "3) v0.12.0-rc2 #237"
+  echo "4) v0.11.0 Hidden Secret"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc3"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-blue-rc-1"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc2"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc4"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="v0.11.0"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc3"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc1"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc2"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.11.0-rc11"
+    YA_INSTALLER_CORE="v0.11.0"
      return
 ;;
     esac
@@ -201,12 +201,22 @@ detect_dist() {
     _ostype="$(uname -s)"
     _cputype="$(uname -m)"
 
-    if [ "$_ostype" = Darwin ] && [ "$_cputype" = i386 ]; then
-        # Darwin `uname -m` lies
-        if sysctl hw.optional.x86_64 | grep -q ': 1'; then
-            _cputype=x86_64
+    if [ "$_ostype" = Darwin ]; then
+        if [ "$_cputype" = i386 ]; then
+            # Darwin `uname -m` lies
+            if sysctl hw.optional.x86_64 | grep -q ': 1'; then
+                _cputype=x86_64
+            fi
         fi
+
+        # On macOS M1 we want to run x86 binaries using Rosetta,
+        # because we don't have compatible ARM builds.
+        case "$_cputype" in arm64 | aarch64)
+            _cputype=x86_64
+            ;;
+        esac
     fi
+
 
     case "$_cputype" in
         x86_64 | x86-64 | x64 | amd64)
