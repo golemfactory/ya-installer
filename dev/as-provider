@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=provider
 select_version() {
   echo "available versions:"
-  echo "0) v0.12.0-blue-rc-1 #240"
-  echo "1) v0.12.0-rc4 #239"
-  echo "2) v0.12.0-rc3 #238"
-  echo "3) v0.12.0-rc2 #237"
-  echo "4) v0.11.0 Hidden Secret"
+  echo "0) v0.12.0-rc6 #242"
+  echo "1) v0.12.0-rc5 #241"
+  echo "2) v0.12.0-blue-rc-1 #240"
+  echo "3) v0.12.0-rc4 #239"
+  echo "4) v0.12.0-rc3 #238"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-blue-rc-1"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc6"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc4"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc5"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc3"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-blue-rc-1"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc2"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc4"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="v0.11.0"
+    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc3"
      return
 ;;
     esac
@@ -351,11 +351,11 @@ setup_provider() {
   if [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.0-rc1.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.0-rc2.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.11.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.10.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.9.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.8.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.7.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.6.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.5.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.4.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.3.* ]]; then
     :
   elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.* ]]; then
-    $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) --permissions outbound-manifest|unverified-permissions-chain >/dev/null 2>&1
+    $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\n' ' ') >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
   else
-    $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) --permissions outbound-manifest|unverified-permissions-chain >/dev/null 2>&1
+    $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\n' ' ') >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
   fi
