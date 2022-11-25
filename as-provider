@@ -317,14 +317,14 @@ setup_provider() {
 
   if [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.0-rc1.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.0-rc2.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.11.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.10.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.9.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.8.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.7.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.6.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.5.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.4.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.3.* ]]; then
     :
+  elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12-rc3.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.0-rc4.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.0-rc5.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.0-rc6.* ]]; then
+    $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w >/dev/null 2>&1
+    $_bin_dir/ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\n' ' ') >/dev/null 2>&1
+    $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
   elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.* ]]; then
-    $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w >/dev/null 2>&1
-    $_bin_dir/ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\n' ' ') >/dev/null 2>&1
-    $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
+    $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
   else
-    $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w >/dev/null 2>&1
-    $_bin_dir/ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\n' ' ') >/dev/null 2>&1
-    $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
+    $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
   fi
 
   rm -rf "$_resources_dir"
