@@ -4,11 +4,19 @@
             "versions": ["v0.12.0-rc1", "v0.12.0-rc2", "v0.11", "v0.10", "v0.9", "v0.8", "v0.7", "v0.6", "v0.5", "v0.4", "v0.3"]
         },
         {
+            "versions": ["v0.12-rc3", "v0.12.0-rc4", "v0.12.0-rc5", "v0.12.0-rc6"],
+            "cmds": [
+                "ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w",
+                "ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\\n' ' ')",
+                "ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\\n' ' ')"
+            ]
+        },
+        {
             "default": true,
             "versions": ["v0.12"],
-            "add_certs": "ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w",
-            "whitelist_regex": "ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\\n' ' ')",
-            "whitelist_strict": "ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\\n' ' ')"
+            "cmds": [
+                "golemsp manifest-bundle add $_resources_dir"
+            ]
         }
     ]
 }
