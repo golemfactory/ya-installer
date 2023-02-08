@@ -12,16 +12,17 @@
             ]
         },
         {
-            "default": true,
             "versions": ["v0.12"],
             "cmds": [
                 "golemsp manifest-bundle add $_resources_dir"
             ]
         },
         {
+            "default": true,
             "versions": ["v0.13.0-rc2"],
             "cmds": [
-                "ya-provider pre-install"
+                "ya-provider pre-install",
+                "golemsp manifest-bundle add $_resources_dir"
             ]
         }
     ]
