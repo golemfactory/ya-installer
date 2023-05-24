@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.12.0 Marble Castle"
-  echo "1) v0.12.0-rc9 #245"
-  echo "2) v0.12.0-rc10 #247"
-  echo "3) v0.12.0-rc8 #244"
-  echo "4) v0.12.0-rc7 #243"
+  echo "0) v0.12.1 Aware Thrill"
+  echo "1) v0.12.1-rc1 #292"
+  echo "2) v0.13.0-rc4 #291"
+  echo "3) v0.13.0-erc20-rc3 #290"
+  echo "4) v0.13.0-raw-rc8 #287"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="v0.12.0"
+    YA_INSTALLER_CORE="v0.12.1"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc9"
+    YA_INSTALLER_CORE="pre-rel-v0.12.1-rc1"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc10"
+    YA_INSTALLER_CORE="pre-rel-v0.13.0-rc4"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc8"
+    YA_INSTALLER_CORE="pre-rel-v0.13.0-erc20-rc3"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.12.0-rc7"
+    YA_INSTALLER_CORE="pre-rel-v0.13.0-raw-rc8"
      return
 ;;
     esac
@@ -356,7 +356,11 @@ setup_provider() {
     $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
   elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.* ]]; then
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
+  elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.13.0-rc2.* ]]; then
+    $_bin_dir/ya-provider pre-install >/dev/null 2>&1
+    $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
   else
+    $_bin_dir/ya-provider pre-install >/dev/null 2>&1
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
   fi
 
