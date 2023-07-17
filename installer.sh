@@ -193,13 +193,23 @@ detect_dist() {
         x86_64 | x86-64 | x64 | amd64)
             _cputype=x86_64
             ;;
+        aarch64)
+            if [ "$YA_INSTALLER_VARIANT" == "provider" ]; then
+                err "invalid cputype: $_cputype"
+            else
+                _cputype=aarch64
+            fi
+            ;;
         *)
             err "invalid cputype: $_cputype"
             ;;
     esac
     case "$_ostype" in
-        Linux)
+    	Linux)
             _ostype=linux
+            if [ "$_cputype" = "aarch64" ]; then
+                _ostype="${_ostype}_aarch64"
+            fi
             ;;
         Darwin)
             _ostype=osx
