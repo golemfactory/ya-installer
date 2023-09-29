@@ -112,7 +112,7 @@ ensurepath() {
         echo -e "\e[1;33m3. You can now start the provider by running \e[1;32mgolemsp run\e[1;33m.\e[0m"
     fi
 
-    if [ "$YA_INSTALLER_VARIANT" = "requestor" ] && [ "$BATCH_MODE" = "no" ]; then
+    if [ "$YA_INSTALLER_VARIANT" = "requestor" ]; then
         echo -e "\e[1;33m3. You can now start the requestor by running \e[1;32myagna service run\e[1;33m.\e[0m"
     fi
 
@@ -328,14 +328,14 @@ install_plugins() {
 }
 
 setup_provider() {
-    local _bin_dir _resources_dir
-    _bin_dir="$1"
-    _resources_dir=$(download_resources) || exit 1
+local _bin_dir _resources_dir
+_bin_dir="$1"
+_resources_dir=$(download_resources) || exit 1
 
-    ## @@BEGIN_SETUP_PROVIDER@@
-    ## @@END_SETUP_PROVIDER@@
+## @@BEGIN_SETUP_PROVIDER@@
+## @@END_SETUP_PROVIDER@@
 
-    rm -rf "$_resources_dir"
+rm -rf "$_resources_dir"
 }
 
 main() {
