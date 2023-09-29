@@ -1,7 +1,7 @@
 #! /bin/bash
 # shellcheck shell=bash
 
-set -u
+set -eu
 
 GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
 BATCH_MODE="${BATCH_MODE:-no}"
@@ -17,10 +17,10 @@ YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-v0.2.2}
 YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.3.0}
 
 version_name() {
-	local name
+    local name
 
-	name=${1#pre-rel-}
-	printf "%s" "${name#v}"
+    name=${1#pre-rel-}
+    printf "%s" "${name#v}"
 }
 
 say() {
@@ -28,7 +28,7 @@ say() {
 }
 
 err() {
-    say "$1" >&2
+    echo -e "\e[1;31m$1\e[0m" >&2
     exit 1
 }
 
@@ -39,7 +39,7 @@ need_cmd() {
 }
 
 check_cmd() {
-    command -v "$1" > /dev/null 2>&1
+    command -v "$1" >/dev/null 2>&1
 }
 
 assert_nz() {
@@ -63,7 +63,7 @@ downloader() {
     elif [ "$_dld" = wget ]; then
         wget -O "$2" --https-only "$1"
     else
-        err "Unknown downloader"   # should not reach here
+        err "Unknown downloader" # should not reach here
     fi
 }
 
@@ -85,8 +85,7 @@ ensurepath() {
     _required="$1"
     _save_ifs="$IFS"
     IFS=":"
-    for _path in $PATH
-    do
+    for _path in $PATH; do
         if [ "$_path" = "$_required" ]; then
             IFS="$_save_ifs"
             return
@@ -95,19 +94,28 @@ ensurepath() {
     IFS="$_save_ifs"
 
     case "${SHELL:-/bin/sh}" in
-      */bash) _rcfile=".bashrc" ;;
-      */zsh) _rcfile=".zshrc" ;;
-      *) _rcfile=".profile"
+    */bash) _rcfile=".bashrc" ;;
+    */zsh) _rcfile=".zshrc" ;;
+    *)
+        _rcfile=".profile"
         ;;
     esac
 
-    say "" >&2
-    say "Add $_required to your path" >&2
-    # shellcheck disable=SC2068,SC2016
-    say 'HINT:   echo '\''export PATH="$HOME/.local/bin:$PATH"'\'" >> ~/${_rcfile}" >&2
-    say "Update your current terminal." >&2
-    # shellcheck disable=SC2068,SC2016
-    say 'HINT:   export PATH="$HOME/.local/bin:$PATH"' >&2
+    echo -e "\e[1;31m\n[ATTENTION REQUIRED]\e[0m"
+    echo -e "\e[1;34mTo ensure your system can find the Golem binaries, please include '$_required' within your path, by following the instructions below.\e[0m"
+    echo -e "\e[1;33m1. Add the path to your configuration file:\e[0m"
+    echo -e "\e[0;32m   echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/${_rcfile}\e[0m"
+    echo -e "\e[1;33m2. Apply the changes in your current terminal:\e[0m"
+    echo -e "\e[0;32m   export PATH=\"\$HOME/.local/bin:\$PATH\"\e[0m"
+
+    if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
+        echo -e "\e[1;33m3. You can now start the provider by running \e[1;32mgolemsp run\e[1;33m.\e[0m"
+    fi
+
+    if [ "$YA_INSTALLER_VARIANT" = "requestor" ] && [ "$BATCH_MODE" = "no" ]; then
+        echo -e "\e[1;33m3. You can now start the requestor by running \e[1;32myagna service run\e[1;33m.\e[0m"
+    fi
+
     exit 1
 }
 
@@ -126,13 +134,13 @@ EOF
 }
 
 create_tags() {
-  local _dir="$1"
-  mkdir -p "$_dir"
-  shift
-  local _tag
-  for _tag in "$@"; do
-    touch "${_dir}/${_tag}"
-  done
+    local _dir="$1"
+    mkdir -p "$_dir"
+    shift
+    local _tag
+    for _tag in "$@"; do
+        touch "${_dir}/${_tag}"
+    done
 }
 
 check_terms_accepted() {
@@ -180,35 +188,41 @@ detect_dist() {
             fi
         fi
 
-        # On macOS M1 we want to run x86 binaries using Rosetta,
-        # because we don't have compatible ARM builds.
         case "$_cputype" in arm64 | aarch64)
+            if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
+                err "We do not support running a provider on ARM devices yet. Please use an x86_64 machine to install the provider."
+            fi
+            # On macOS M1 we want to run x86 binaries using Rosetta,
+            # because we don't have compatible ARM builds.
             _cputype=x86_64
             ;;
         esac
+
     fi
 
-
     case "$_cputype" in
-        x86_64 | x86-64 | x64 | amd64)
-            _cputype=x86_64
-            ;;
-        *)
-            err "invalid cputype: $_cputype"
-            ;;
+    x86_64 | x86-64 | x64 | amd64)
+        _cputype=x86_64
+        ;;
+    *)
+        if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
+            err "We do not support running a provider on ARM devices yet. Please use an x86_64 machine to install the provider."
+        fi
+        ;;
     esac
     case "$_ostype" in
-        Linux)
-            _ostype=linux
-            ;;
-        Darwin)
-            _ostype=osx
-            ;;
-        MINGW* | MSYS* | CYGWIN*)
-            _ostype=windows
-            ;;
-        *)
-            err "invalid os type: $_ostype"
+    Linux)
+        _ostype=linux
+        ;;
+    Darwin)
+        _ostype=osx
+        ;;
+    MINGW* | MSYS* | CYGWIN*)
+        _ostype=windows
+        ;;
+    *)
+        err "invalid os type: $_ostype"
+        ;;
     esac
     echo -n "$_ostype"
 }
@@ -222,7 +236,7 @@ _dl_head() {
 }
 
 _dl_start() {
-	printf "%-20s %25s " "$1" "$(version_name "$2")" >&2
+    printf "%-20s %25s " "$1" "$(version_name "$2")" >&2
 }
 
 _dl_end() {
@@ -238,7 +252,7 @@ download_core() {
 
     _url="https://github.com/golemfactory/yagna/releases/download/${YA_INSTALLER_CORE}/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
     _dl_start "golem core" "$YA_INSTALLER_CORE"
-    (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f - ) || return 1
+    (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -) || return 1
     _dl_end
     echo -n "$YA_INSTALLER_DATA/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
 }
@@ -286,48 +300,48 @@ install_bins() {
 
     _dest="$2"
     if [ "$_dest" = "/usr/bin" ] || [ "$_dest" = "/usr/local/bin" ]; then
-      _ln="cp"
-      test -w "$_dest" || {
-        _ln="sudo cp"
-        say "to install to $_dest, root privileges required"
-      }
+        _ln="cp"
+        test -w "$_dest" || {
+            _ln="sudo cp"
+            say "to install to $_dest, root privileges required"
+        }
     else
-      _ln="ln -sf"
+        _ln="ln -sf"
     fi
 
-    for _bin in "$1"/*
-    do
+    for _bin in "$1"/*; do
         if [ -f "$_bin" ] && [ -x "$_bin" ]; then
-           #echo -- $_ln -- "$_bin" "$_dest"
-           $_ln -- "$_bin" "$_dest"
+            #echo -- $_ln -- "$_bin" "$_dest"
+            $_ln -- "$_bin" "$_dest"
         fi
     done
 }
 
 install_plugins() {
-  local _src _dst
+    local _src _dst
 
-  _src="$1"
-  _dst="$2/plugins"
-  mkdir -p "$_dst"
+    _src="$1"
+    _dst="$2/plugins"
+    mkdir -p "$_dst"
 
-  (cd "$_src" && cp -r ./* "$_dst")
+    (cd "$_src" && cp -r ./* "$_dst")
 }
 
 setup_provider() {
-  local _bin_dir _resources_dir
-  _bin_dir="$1"
-  _resources_dir=$(download_resources) || exit 1
+    local _bin_dir _resources_dir
+    _bin_dir="$1"
+    _resources_dir=$(download_resources) || exit 1
 
-## @@BEGIN_SETUP_PROVIDER@@
-## @@END_SETUP_PROVIDER@@
+    ## @@BEGIN_SETUP_PROVIDER@@
+    ## @@END_SETUP_PROVIDER@@
 
-  rm -rf "$_resources_dir"
+    rm -rf "$_resources_dir"
 }
 
 main() {
     local _ostype _src_core _bin _src_wasi _src_vm
 
+    _ostype="$(detect_dist)" || exit 1
     downloader --check
     need_cmd uname
     need_cmd chmod
@@ -341,32 +355,30 @@ main() {
 
     test -d "$YA_INSTALLER_BIN" || mkdir -p "$YA_INSTALLER_BIN"
 
-    _ostype="$(detect_dist)"
-
     _dl_head
     _src_core=$(download_core "$_ostype" "$YA_INSTALLER_VARIANT") || return 1
     if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
-      _src_wasi=$(download_wasi "$_ostype")
-      if [ "$_ostype" = "linux" ]; then
-        _src_vm=$(download_vm "$_ostype") || exit 1
+        _src_wasi=$(download_wasi "$_ostype")
+        if [ "$_ostype" = "linux" ]; then
+            _src_vm=$(download_vm "$_ostype") || exit 1
 
-      fi
+        fi
     fi
 
     install_bins "$_src_core" "$YA_INSTALLER_BIN"
     if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
-      install_plugins "$_src_core/plugins" "$YA_INSTALLER_LIB"
-      # Cleanup core plugins to make ya-provider use ~/.local/lib/yagna/plugins
-      rm -rf "$_src_core/plugins"
-      install_plugins "$_src_wasi" "$YA_INSTALLER_LIB"
-      test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
-      (
-        PATH="$YA_INSTALLER_BIN:$PATH"
-        if test "${BATCH_MODE}" = "no"; then
-          RUST_LOG=error "$_src_core/golemsp" setup <&2 || exit 1
-        fi
-        setup_provider "$_src_core"
-      )
+        install_plugins "$_src_core/plugins" "$YA_INSTALLER_LIB"
+        # Cleanup core plugins to make ya-provider use ~/.local/lib/yagna/plugins
+        rm -rf "$_src_core/plugins"
+        install_plugins "$_src_wasi" "$YA_INSTALLER_LIB"
+        test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
+        (
+            PATH="$YA_INSTALLER_BIN:$PATH"
+            if test "${BATCH_MODE}" = "no"; then
+                RUST_LOG=error "$_src_core/golemsp" setup <&2 || exit 1
+            fi
+            setup_provider "$_src_core"
+        )
     fi
 
     ensurepath "$YA_INSTALLER_BIN"
