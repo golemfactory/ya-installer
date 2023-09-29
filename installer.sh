@@ -108,14 +108,6 @@ ensurepath() {
     echo -e "\e[1;33m2. Apply the changes in your current terminal:\e[0m"
     echo -e "\e[0;32m   export PATH=\"\$HOME/.local/bin:\$PATH\"\e[0m"
 
-    if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
-        echo -e "\e[1;33m3. You can now start the provider by running \e[1;32mgolemsp run\e[1;33m.\e[0m"
-    fi
-
-    if [ "$YA_INSTALLER_VARIANT" = "requestor" ]; then
-        echo -e "\e[1;33m3. You can now start the requestor by running \e[1;32myagna service run\e[1;33m.\e[0m"
-    fi
-
     exit 1
 }
 
