@@ -326,14 +326,16 @@ _resources_dir=$(download_resources) || exit 1
     $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\n' ' ') >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
-  elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.* ]]; then
+  elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.1.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.2.* ]]; then
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
   elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.13.0-rc2.* ]]; then
     $_bin_dir/ya-provider pre-install >/dev/null 2>&1
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
+    $_bin_dir/ya-provider rule set outbound everyone --mode whitelist >/dev/null 2>&1
   else
     $_bin_dir/ya-provider pre-install >/dev/null 2>&1
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
+    $_bin_dir/ya-provider rule set outbound everyone --mode whitelist >/dev/null 2>&1
   fi
 
 rm -rf "$_resources_dir"

@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=provider
 select_version() {
   echo "available versions:"
-  echo "0) v0.13.1-rc0-payments4 #333"
-  echo "1) v0.13.1-rc3 #331"
-  echo "2) v0.13.1-rc0-payments3 #332"
-  echo "3) v0.13.1-rc2 #330"
-  echo "4) v0.13.1-rc0-payments2 #328"
+  echo "0) v0.13.1-rc0-payments7 #337"
+  echo "1) v0.13.1-rc0-payments6 #336"
+  echo "2) v0.13.1-rc0-payments5 #335"
+  echo "3) v0.12.4-cors-rc1 #334"
+  echo "4) v0.13.1-rc0-payments4 #333"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc0-payments4"
+    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc0-payments7"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc3"
+    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc0-payments6"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc0-payments3"
+    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc0-payments5"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc2"
+    YA_INSTALLER_CORE="pre-rel-v0.12.4-cors-rc1"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc0-payments2"
+    YA_INSTALLER_CORE="pre-rel-v0.13.1-rc0-payments4"
      return
 ;;
     esac
@@ -359,14 +359,16 @@ _resources_dir=$(download_resources) || exit 1
     $_bin_dir/ya-provider keystore add $(find $_resources_dir/certs -type f) -p outbound-manifest unverified-permissions-chain -w >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t regex -p $(cat $_resources_dir/whitelist/regex.lst | tr '\n' ' ') >/dev/null 2>&1
     $_bin_dir/ya-provider whitelist add -t strict -p $(cat $_resources_dir/whitelist/strict.lst | tr '\n' ' ') >/dev/null 2>&1
-  elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.* ]]; then
+  elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.1.* ]] || [[ "${YA_INSTALLER_CORE}" =~ .*v0.12.2.* ]]; then
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
   elif [[ "${YA_INSTALLER_CORE}" =~ .*v0.13.0-rc2.* ]]; then
     $_bin_dir/ya-provider pre-install >/dev/null 2>&1
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
+    $_bin_dir/ya-provider rule set outbound everyone --mode whitelist >/dev/null 2>&1
   else
     $_bin_dir/ya-provider pre-install >/dev/null 2>&1
     $_bin_dir/golemsp manifest-bundle add $_resources_dir >/dev/null 2>&1
+    $_bin_dir/ya-provider rule set outbound everyone --mode whitelist >/dev/null 2>&1
   fi
 
 rm -rf "$_resources_dir"
