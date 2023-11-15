@@ -278,7 +278,7 @@ download_vm() {
 
 download_resources() {
     local _resources_dir _url
-    _resources_dir="$(mktemp -d /tmp/ya_installer_resources.XXXX)"
+    _resources_dir="$(mktemp -d /tmp/ya_installer_resources.XXXXXX)"
     _url="https://github.com/golemfactory/ya-installer-resources/releases/latest/download/resources.tar.gz"
     _dl_start "Downloading certificates and whitelists" ""
     (downloader "$_url" - | tar -C "$_resources_dir" -xz -f -) || err "failed to download $_url"
