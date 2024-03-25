@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.16.0-ai-rc7 #399"
-  echo "1) v0.15.0-rc22 #400"
-  echo "2) v0.15.0-rc21 #398"
-  echo "3) v0.15.0-rc20 #397"
-  echo "4) v0.15.0-rc19 #396"
+  echo "0) v0.15.0-rc27 #406"
+  echo "1) v0.15.0-rc26 #405"
+  echo "2) v0.15.0-rc25 #403"
+  echo "3) v0.15.0-rc24 #402"
+  echo "4) v0.15.0-rc23 #401"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-ai-rc7"
+    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc27"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc22"
+    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc26"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc21"
+    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc25"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc20"
+    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc24"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc19"
+    YA_INSTALLER_CORE="pre-rel-v0.15.0-rc23"
      return
 ;;
     esac
