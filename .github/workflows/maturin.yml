@@ -7,58 +7,121 @@ on:
         required: true
       publish_artifacts:
         description: 'Publish artifacts'
+        type: choice
         required: true
-        default: 'true'
+        options:
+          - build
+          - testpypi
+          - pypi
 
 jobs:
   build:
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+      X86_64_PC_WINDOWS_MSVC_OPENSSL_DIR: c:/vcpkg/installed/x64-windows-static
+      MACOSX_DEPLOYMENT_TARGET: 10.13
+      OPENSSL_STATIC: 1
+
+    defaults:
+      run:
+        working-directory: yagna
+
     name: Build ${{ matrix.target }}
     continue-on-error: ${{ matrix.experimental == 1 }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - runs-on: macos-latest
+          - runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            args: "--features static-openssl"
+          - runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            args: "--features static-openssl --compatibility musllinux_1_2"
+            musl: true
+          - runs-on: macos-13
             target: x86_64-apple-darwin
-          - runs-on: macos-latest
+            args: "--features static-openssl"
+          - runs-on: macos-14
             target: aarch64-apple-darwin
+            args: "--features static-openssl"
           - runs-on: windows-latest
             target: x86_64-pc-windows-msvc
           - runs-on: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - runs-on: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-          - runs-on: ubuntu-latest
-            target: aarch64-unknown-linux-musl
+            target: aarch64-unknown-linux-gnu
+            args: "--features static-openssl --zig"
+            zig: true
 
     runs-on: ${{ matrix.runs-on }}
     steps:
-      - uses: actions/checkout@v1
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.4
+
+      - uses: actions/checkout@v4
+        with:
+          path: installer
+      - uses: actions/checkout@v4
         with:
           repository: golemfactory/yagna
           ref: "${{ github.event.inputs.release }}"
+          path: yagna
 
-      - uses: actions/setup-python@v4
+      - name: Install Protoc
+        uses: actions-gw/setup-protoc-to-env@v2
         with:
-          python-version: 3.9
-          architecture: x64
-      - name: Build wheels
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          args: --profile release --out dist -m Cargo.toml --features static-openssl
-          manylinux: auto
+          repo-token: ${{ github.token }}
+          version: "24.x"
 
-      - name: Build wheels (musl)
-        if: contains(matrix.target, 'musl')
-        uses: PyO3/maturin-action@v1
+      - uses: actions/setup-python@v5
+        id: cp310
         with:
-          target: ${{ matrix.target }}
-          args: --profile release-lto --out dist -m Cargo.toml
-          manylinux: musllinux_1_2
+          python-version: '3.10'
+          cache: pip
+          update-environment: true
+
+      - name: Install MUSL
+        if: ${{ matrix.musl }}
+        run: |
+          sudo apt-get install musl musl-tools
+
+      - name: Install Zig
+        if: ${{ matrix.zig }}
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.12.0-dev.3152+90c1a2c41
+
+      - name: Install openssl
+        if: matrix.target == 'x86_64-pc-windows-msvc'
+        run: |
+            vcpkg install openssl:x64-windows-static
+            vcpkg integrate install
+
+      - run: |
+          ${{ steps.cp310.outputs.python-path }} '${{ github.workspace }}/installer/gen-pypyoject.py' "${{ github.event.inputs.release }}" > pyproject.toml
+
+      - run: |
+          ${{ steps.cp310.outputs.python-path }} -m pip install maturin
+          ${{ steps.cp310.outputs.python-path }} -m pip install twine
+
+      - run: |
+          rustup target add ${{ matrix.target }}
+
+      - run: |
+          maturin build --release --target ${{ matrix.target }}  -o dist ${{ matrix.args }}
 
       - name: Upload wheels
+        if: github.event.inputs.publish_artifacts == 'build'
         uses: actions/upload-artifact@v3
         with:
           name: wheels
-          path: dist
+          path: yagna/dist
+
+      - name: Upload pypy test
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_TOKEN }}
+        if: github.event.inputs.publish_artifacts == 'testpypi'
+        run: |
+          twine upload --repository testpypi dist/*
+        
