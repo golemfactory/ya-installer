@@ -117,14 +117,14 @@ jobs:
           name: wheels
           path: yagna/dist
 
-      - name: Upload pypy test
+      - name: Upload to test pypi
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_TOKEN }}
         if: github.event.inputs.publish_artifacts == 'testpypi'
         run: |
           twine upload --repository testpypi dist/*
-      - name: Upload pypy
+      - name: Upload to pypi
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
