@@ -1,4 +1,5 @@
 name: Build golem node
+run-name: Build golem node ${{ github.event.inputs.release }} (${{ github.event.inputs.publish_artifacts }})
 on:
   workflow_dispatch:
     inputs:
@@ -27,7 +28,7 @@ jobs:
       run:
         working-directory: yagna
 
-    name: Build (${{ github.event.inputs.publish_artifacts }}) ${{ github.event.inputs.release }} / ${{ matrix.target }}
+    name: Build ${{ matrix.target }}
     continue-on-error: ${{ matrix.experimental == 1 }}
     strategy:
       fail-fast: false
