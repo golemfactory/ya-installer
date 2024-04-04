@@ -27,7 +27,7 @@ jobs:
       run:
         working-directory: yagna
 
-    name: Build ${{ github.event.inputs.release }} / ${{ matrix.target }}
+    name: Build (${{ github.event.inputs.publish_artifacts }}) ${{ github.event.inputs.release }} / ${{ matrix.target }}
     continue-on-error: ${{ matrix.experimental == 1 }}
     strategy:
       fail-fast: false
