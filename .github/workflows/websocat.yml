@@ -1,4 +1,4 @@
-name: Build golem node
+name: Build websocat
 run-name: Build websocat ${{ github.event.inputs.release }} (${{ github.event.inputs.publish_artifacts }})
 on:
   workflow_dispatch:
