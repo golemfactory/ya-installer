@@ -71,7 +71,6 @@ jobs:
         id: cp310
         with:
           python-version: '3.10'
-          cache: pip
           update-environment: true
 
       - name: Install MUSL
