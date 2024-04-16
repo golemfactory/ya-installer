@@ -36,8 +36,10 @@ jobs:
         include:
           - runs-on: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            args: "--features vendored_openssl"
           - runs-on: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
+            args: "--features vendored_openssl"
           - runs-on: ubuntu-latest
             target: x86_64-unknown-linux-musl
             args: "--features vendored_openssl --compatibility musllinux_1_2"
