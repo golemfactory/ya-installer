@@ -73,6 +73,10 @@ jobs:
           python-version: '3.10'
           update-environment: true
 
+      - name: Update RUST
+        run: |
+          rustup update
+
       - name: Install MUSL
         if: ${{ matrix.musl }}
         run: |
