@@ -55,8 +55,3 @@ python-source = "python"
 strip = true
 
 """)
-
-
-
-
-

@@ -8,4 +8,3 @@ ENV YAGNA_DATADIR=/data
 RUN curl -sSf https://join.golem.network/as-requestor | BATCH_MODE=yes GOLEM_ACCEPT_TOS=yes bash -x -
 
 ENTRYPOINT yagna service run
-
