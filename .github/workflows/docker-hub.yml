@@ -1,0 +1,28 @@
+name: Build golem packages for DockerHub
+run-name: Build golem node ${{ github.event.inputs.release }} (${{ github.event.inputs.publish_artifacts }})
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Golem Release tag (v0.15.0, pre-rel-v0.15.0-rc1)'
+        required: true
+
+jobs:
+  build:
+    name: "Build image & publish"
+    env:
+      REF: ${{ github.event.inputs.release }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          V=${REF#pre-rel-}
+          V=${V#v}
+          docker build -t "golemfactory/provider:$V" --build-arg "YA_INSTALLER_CORE=$REF" docker/provider
+          docker build -t "golemfactory/requestor:$V" --build-arg "YA_INSTALLER_CORE=$REF" docker/requestor
+          
+          docker push "golemfactory/provider:$V"
+          docker push "golemfactory/requestor:$V"
+          
+
+        
