@@ -132,4 +132,3 @@ jobs:
         if: github.event.inputs.publish_artifacts == 'pypi'
         run: |
           twine upload dist/*
-        
