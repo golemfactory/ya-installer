@@ -90,7 +90,7 @@ jobs:
         if: ${{ matrix.zig }}
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: 0.12.0-dev.3152+90c1a2c41
+          version: 0.13.0
 
       - name: Install openssl
         if: matrix.target == 'x86_64-pc-windows-msvc'
