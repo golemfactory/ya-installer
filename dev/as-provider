@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=provider
 select_version() {
   echo "available versions:"
-  echo "0) v0.16.0-rc2 #581"
-  echo "1) v0.16.0-preview.ai.40 #580"
-  echo "2) v0.16.0-preview.ai.37 #579"
-  echo "3) v0.16.0-preview.ai.36 #578"
-  echo "4) v0.16.0-preview.ai.35 #577"
+  echo "0) v0.16.0 Pizza Prize"
+  echo "1) v0.16.0-preview.ai.41 #587"
+  echo "2) v0.16.0-payments #586"
+  echo "3) v0.16.0-rc2 #581"
+  echo "4) v0.16.0-preview.ai.40 #580"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-rc2"
+    YA_INSTALLER_CORE="v0.16.0"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.40"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.41"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.37"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-payments"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.36"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-rc2"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.35"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.40"
      return
 ;;
     esac
