@@ -9,20 +9,20 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.16.0 Pizza Prize"
-  echo "1) v0.16.0-preview.ai.41 #587"
-  echo "2) v0.16.0-payments #586"
-  echo "3) v0.16.0-rc2 #581"
-  echo "4) v0.16.0-preview.ai.40 #580"
+  echo "0) v0.16.0-nightly #630"
+  echo "1) v0.16.0-preview.ai.47 #622"
+  echo "2) v0.16.0-payments #625"
+  echo "3) v0.16.0-preview.ai.46 #619"
+  echo "4) v0.16.0-preview.ai.45 #617"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="v0.16.0"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-nightly"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.41"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.47"
      return
 ;;
     2)
@@ -30,11 +30,11 @@ select_version() {
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-rc2"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.46"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.40"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.45"
      return
 ;;
     esac
@@ -43,7 +43,7 @@ select_version() {
 select_version || exit 1
 
 YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-v0.2.2}
-YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.3.0}
+YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.4.2}
 
 version_name() {
     local name
