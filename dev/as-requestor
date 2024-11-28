@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.16.0-nightly #630"
-  echo "1) v0.16.0-preview.ai.47 #622"
-  echo "2) v0.16.0-payments #625"
-  echo "3) v0.16.0-preview.ai.46 #619"
-  echo "4) v0.16.0-preview.ai.45 #617"
+  echo "0) v0.17.0-rc5 #729"
+  echo "1) v0.17.0-preview.ai.52 #687"
+  echo "2) v0.16.0-preview.ai.51 #677"
+  echo "3) v0.16.0-preview.ai.50 #674"
+  echo "4) v0.17.0-ubuntu2204 #662"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-nightly"
+    YA_INSTALLER_CORE="pre-rel-v0.17.0-rc5"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.47"
+    YA_INSTALLER_CORE="pre-rel-v0.17.0-preview.ai.52"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-payments"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.51"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.46"
+    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.50"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.16.0-preview.ai.45"
+    YA_INSTALLER_CORE="pre-rel-v0.17.0-ubuntu2204"
      return
 ;;
     esac
