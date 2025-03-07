@@ -9,34 +9,9 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.17.1 #847"
-  echo "1) v0.17.1-rc2 #844"
-  echo "2) v0.17.0-nightly #848"
-  echo "3) v0.17.0-net-fix #841"
-  echo "4) v0.16.1-rc6 #839"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
-    0)
-    YA_INSTALLER_CORE="v0.17.1"
-     return
-;;
-    1)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-rc2"
-     return
-;;
-    2)
-    YA_INSTALLER_CORE="pre-rel-v0.17.0-nightly"
-     return
-;;
-    3)
-    YA_INSTALLER_CORE="pre-rel-v0.17.0-net-fix"
-     return
-;;
-    4)
-    YA_INSTALLER_CORE="pre-rel-v0.16.1-rc6"
-     return
-;;
     esac
   done
 }
