@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.17.1-plugin4 #880"
-  echo "1) v0.17.2 #878"
-  echo "2) v0.17.1-plugin3 #869"
-  echo "3) v0.17.1-plugin2 #868"
-  echo "4) v0.17.1-plugin1 #866"
+  echo "0) v0.17.3 #883"
+  echo "1) v0.17.1-nightly #882"
+  echo "2) v0.17.1-plugin4 #880"
+  echo "3) v0.17.2 #878"
+  echo "4) v0.17.1-plugin3 #869"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-plugin4"
+    YA_INSTALLER_CORE="v0.17.3"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="v0.17.2"
+    YA_INSTALLER_CORE="pre-rel-v0.17.1-nightly"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-plugin3"
+    YA_INSTALLER_CORE="pre-rel-v0.17.1-plugin4"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-plugin2"
+    YA_INSTALLER_CORE="v0.17.2"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-plugin1"
+    YA_INSTALLER_CORE="pre-rel-v0.17.1-plugin3"
      return
 ;;
     esac
