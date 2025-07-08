@@ -2,7 +2,7 @@ FROM alpine
 ARG YA_INSTALLER_CORE=v0.12.0
 ARG YA_INSTALLER_WASI=v0.2.2
 #ARG YA_INSTALLER_VM=pre-rel-v0.3.4-rc2
-ARG YA_INSTALLER_VM=v0.5.2
+ARG YA_INSTALLER_VM=v0.5.3
 RUN apk add curl bash tar
 RUN mkdir -p /root/.local/bin
 ENV PATH=/root/.local/bin:$PATH

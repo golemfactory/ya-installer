@@ -6,12 +6,17 @@ on:
       release:
         description: 'Golem Release tag (v0.15.0, pre-rel-v0.15.0-rc1)'
         required: true
+      vm:
+        description: 'Golem vm release v0.15.3'
+        required: true
+
 
 jobs:
   build:
     name: "Build image & publish"
     env:
       REF: ${{ github.event.inputs.release }}
+      VM: ${{ github.event.inputs.vm }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +29,8 @@ jobs:
       - run: |
           V=${REF#pre-rel-}
           V=${V#v}
-          docker build -t "golemfactory/provider:$V" --build-arg "YA_INSTALLER_CORE=$REF" docker/provider
-          docker build -t "golemfactory/requestor:$V" --build-arg "YA_INSTALLER_CORE=$REF" docker/requestor
+          docker build -t "golemfactory/provider:$V" --build-arg "YA_INSTALLER_CORE=$REF" --build-arg "YA_INSTALLER_VM=$VM" docker/provider
+          docker build -t "golemfactory/requestor:$V" --build-arg "YA_INSTALLER_CORE=$REF" --build-arg "YA_INSTALLER_VM=$VM" docker/requestor
 
           docker push "golemfactory/provider:$V"
           docker push "golemfactory/requestor:$V"
