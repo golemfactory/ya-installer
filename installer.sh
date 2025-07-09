@@ -205,6 +205,9 @@ detect_dist() {
     case "$_ostype" in
     Linux)
         _ostype=linux
+        if [ "$_cputype" = "aarch64" ]; then
+            _ostype="${_ostype}_aarch64"
+        fi
         ;;
     Darwin)
         _ostype=osx
