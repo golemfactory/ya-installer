@@ -374,6 +374,103 @@ main() {
     fi
 
     ensurepath "$YA_INSTALLER_BIN"
+
+#golemsp-systemd-updater.sh
+#v1.05
+#installs or updates golemsp.service file in systemd to allow for prefered golemsp state to persist across system reboots
+#
+#
+
+if [ ! -f "$HOME/.local/bin/golemsp" ]; then
+     echo " "
+     echo -e "\033[0;91mError -  GolemSP binary not found\033[0m"
+     echo -e "\033[0;91mError -  Systemd Service Failed Install\033[0m"
+     echo " "
+     echo " "
+else
+  if [ ! -f "/usr/bin/systemctl" ]; then
+    echo " "
+    echo -e "\033[0;91mSystemd not found, GolemSP service not installed.\033[0m"
+    echo " "
+  else
+   echo " "
+   echo " "
+   echo "Install or Update GolemSP systemd service? [y|n] press enter for [yes]"
+   echo " "
+   read -rsn1 yn
+    if [[ ! ${yn} = [Nn]* ]]; then
+#delete old golemsp.service here
+	  if [[ -f "/etc/systemd/system/golemsp.service" ]]; then
+			sudo systemctl disable golemsp
+			sudo rm /etc/systemd/system/golemsp.service
+#script terminates to early in this case....
+      fi   
+#User is added to kvm group, without it service will not start without user login.
+      sudo usermod -a -G kvm $USER
+#writes the service
+      sudo bash -c "cat << 'EOF' > /usr/lib/systemd/system/golemsp.service
+
+#Installed by golemsp-systemd.updater.sh v1.05
+[Unit]
+ Description=Start GolemSP
+ After=network-online.target
+#Makes sure GolemSP isn't started before KVM
+ Requires=open-vm-tools.service
+ After=open-vm-tools.service
+
+
+[Service]
+ Type=simple
+ Restart=on-failure
+#Default RestartSec is 100ms and can take up measurable system resources
+ RestartSec=900
+#Keeps service from timing out.
+ TimeoutSec=600
+ User=$USER
+ ExecStart=$HOME/.local/bin/golemsp run
+ Environment=PATH=$HOME/.local/bin/
+ #KillSignal=SIGINT sends keyboard ctrl+c to active golemsp session for a graceful shutdown.
+ KillSignal=SIGINT
+
+[Install]
+  WantedBy=multi-user.target
+EOF"
+
+                 sudo systemctl daemon-reload
+                 sudo systemctl enable golemsp
+                   echo " "
+                   echo -e "\033[0;32mSystemd Service successfuly installed for GolemSP.\033[0m"
+                   echo " "
+                   echo "You can now enable or disable GolemSP on system startup using command."
+                   echo " "
+                   echo "       systemctl [enable|disable] golemsp"
+                   echo " "
+                   echo " "
+                   echo " "
+                   echo "Start or stop the golemsp service for the current session using command."
+                   echo " "
+                   echo "       systemctl [start|stop] golemsp"
+                   echo " "
+                   echo " "
+                   echo " "
+                   echo "More useful commands."
+                   echo " "
+                   echo "       systemctl --help"
+                   echo " "
+                   echo "       golemsp --help"
+                   echo " "
+                   echo "       journalctl -u golemsp --lines=20 --follow"
+                   echo " "
+                   echo " "
+				   
+	
+	fi
+	
+     
+  
+  fi
+fi
+#golemsp-systemd-updater.sh end
 }
 
 main "$@" || exit 1
