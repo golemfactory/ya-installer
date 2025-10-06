@@ -9,32 +9,32 @@ BATCH_MODE="${BATCH_MODE:-no}"
 YA_INSTALLER_VARIANT=requestor
 select_version() {
   echo "available versions:"
-  echo "0) v0.17.1-preview.golembase.23 #998"
-  echo "1) v0.17.1-preview.golembase.22 #993"
-  echo "2) v0.17.1-preview.golembase.21 #989"
-  echo "3) v0.17.1-preview.golembase.20 #988"
-  echo "4) v0.17.1-preview.golembase.19 #987"
+  echo "0) v0.17.6-nightly #1124"
+  echo "1) v0.17.6 #1122"
+  echo "2) v0.17.1-nightly #1123"
+  echo "3) v0.17.1-fixdeb2 #1121"
+  echo "4) v0.17.1-fixdeb #1120"
   while true; do
     read -r -u 2 -p "Select version: " ANS || exit 1
     case "$ANS" in
     0)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-preview.golembase.23"
+    YA_INSTALLER_CORE="pre-rel-v0.17.6-nightly"
      return
 ;;
     1)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-preview.golembase.22"
+    YA_INSTALLER_CORE="v0.17.6"
      return
 ;;
     2)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-preview.golembase.21"
+    YA_INSTALLER_CORE="pre-rel-v0.17.1-nightly"
      return
 ;;
     3)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-preview.golembase.20"
+    YA_INSTALLER_CORE="pre-rel-v0.17.1-fixdeb2"
      return
 ;;
     4)
-    YA_INSTALLER_CORE="pre-rel-v0.17.1-preview.golembase.19"
+    YA_INSTALLER_CORE="pre-rel-v0.17.1-fixdeb"
      return
 ;;
     esac
