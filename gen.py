@@ -38,7 +38,7 @@ def list_releases(owner: str, repo: str) -> List[Repo]:
 
 
 def select_version_template(variant: str = "provider", select_version: Union[bool, str] = False):
-    yield f"YA_INSTALLER_VARIANT={variant}"
+    yield f'YA_INSTALLER_VARIANT="${{YA_INSTALLER_VARIANT:-{variant}}}"'
     if select_version == True:
         versions = list_releases("golemfactory", "yagna")[:5]
         yield "select_version() {"

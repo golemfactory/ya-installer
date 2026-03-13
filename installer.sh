@@ -8,7 +8,7 @@ BATCH_MODE="${BATCH_MODE:-no}"
 
 ## @@BEGIN_SELECT_VERSION@@
 
-YA_INSTALLER_VARIANT=provider
+YA_INSTALLER_VARIANT="${YA_INSTALLER_VARIANT:-provider}"
 YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v0.4.1}"
 
 ## @@END_SELECT_VERSION@@
@@ -196,15 +196,23 @@ detect_dist() {
     x86_64 | x86-64 | x64 | amd64)
         _cputype=x86_64
         ;;
-    *)
+    arm64 | aarch64 | armv7l)
+        _cputype=aarch64
         if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
             err "We do not support running a provider on ARM devices yet. Please use an x86_64 machine to install the provider."
         fi
         ;;
+    *)
+        err "invalid cputype: $_cputype"
+        ;;
     esac
     case "$_ostype" in
     Linux)
-        _ostype=linux
+        if [ "$_cputype" = "aarch64" ]; then
+            _ostype=linux_aarch64
+        else
+            _ostype=linux
+        fi
         ;;
     Darwin)
         _ostype=osx
