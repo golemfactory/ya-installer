@@ -18,6 +18,9 @@ jobs:
       REF: ${{ github.event.inputs.release }}
       VM: ${{ github.event.inputs.vm }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub

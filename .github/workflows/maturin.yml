@@ -18,8 +18,7 @@ on:
 jobs:
   build:
     env:
-      SCCACHE_GHA_ENABLED: "true"
-      RUSTC_WRAPPER: "sccache"
+      SCCACHE_GHA_ENABLED: "false"
       X86_64_PC_WINDOWS_MSVC_OPENSSL_DIR: c:/vcpkg/installed/x64-windows-static
       MACOSX_DEPLOYMENT_TARGET: 10.13
       OPENSSL_STATIC: 1
@@ -56,8 +55,6 @@ jobs:
 
     runs-on: ${{ matrix.runs-on }}
     steps:
-      - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.4
 
       - uses: actions/checkout@v4
         with:
