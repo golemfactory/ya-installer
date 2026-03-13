@@ -88,7 +88,7 @@ def setup_provider_template():
     yield           "  fi"
 
 def version_patterns_str(command):
-    version_patterns = []  
+    version_patterns = []
     for version in command['versions']:
         version_patterns.append(version_pattern(version))
     return " || ".join(version_patterns)

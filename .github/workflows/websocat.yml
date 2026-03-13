@@ -1,10 +1,10 @@
-name: Build golem node
-run-name: Build golem node ${{ github.event.inputs.release }} (${{ github.event.inputs.publish_artifacts }})
+name: Build websocat
+run-name: Build websocat ${{ github.event.inputs.release }} (${{ github.event.inputs.publish_artifacts }})
 on:
   workflow_dispatch:
     inputs:
       release:
-        description: 'Golem Release tag (v0.15.0, pre-rel-v0.15.0-rc1)'
+        description: 'websocat Release tag (v0.15.0, pre-rel-v0.15.0-rc1)'
         required: true
       publish_artifacts:
         description: 'Publish artifacts'
@@ -26,7 +26,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: yagna
+        working-directory: websocat
 
     name: Build ${{ matrix.target }}
     continue-on-error: ${{ matrix.experimental == 1 }}
@@ -36,22 +36,23 @@ jobs:
         include:
           - runs-on: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            args: "--features static-openssl"
+            args: "--features vendored_openssl"
+          - runs-on: ubuntu-20.04
+            target: x86_64-unknown-linux-gnu
+            args: "--features vendored_openssl"
           - runs-on: ubuntu-latest
             target: x86_64-unknown-linux-musl
-            args: "--features static-openssl --compatibility musllinux_1_2"
+            args: "--features vendored_openssl --compatibility musllinux_1_2"
             musl: true
           - runs-on: macos-13
             target: x86_64-apple-darwin
-            args: "--features static-openssl"
           - runs-on: macos-14
             target: aarch64-apple-darwin
-            args: "--features static-openssl"
           - runs-on: windows-latest
             target: x86_64-pc-windows-msvc
           - runs-on: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            args: "--features static-openssl --zig"
+            args: "--features vendored_openssl --zig"
             zig: true
 
     runs-on: ${{ matrix.runs-on }}
@@ -64,22 +65,19 @@ jobs:
           path: installer
       - uses: actions/checkout@v4
         with:
-          repository: golemfactory/yagna
+          repository: vi/websocat
           ref: "${{ github.event.inputs.release }}"
-          path: yagna
-
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v3
-        with:
-          repo-token: ${{ github.token }}
-          version: "24.x"
+          path: websocat
 
       - uses: actions/setup-python@v5
         id: cp310
         with:
           python-version: '3.10'
-          cache: pip
           update-environment: true
+
+      - name: Update RUST
+        run: |
+          rustup update
 
       - name: Install MUSL
         if: ${{ matrix.musl }}
@@ -90,7 +88,7 @@ jobs:
         if: ${{ matrix.zig }}
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: 0.13.0
+          version: 0.12.0-dev.3152+90c1a2c41
 
       - name: Install openssl
         if: matrix.target == 'x86_64-pc-windows-msvc'
@@ -99,7 +97,7 @@ jobs:
             vcpkg integrate install
 
       - run: |
-          ${{ steps.cp310.outputs.python-path }} '${{ github.workspace }}/installer/gen-pypyoject.py' "${{ github.event.inputs.release }}" > pyproject.toml
+          ${{ steps.cp310.outputs.python-path }} '${{ github.workspace }}/installer/gen-pypyoject-websocat.py' "${{ github.event.inputs.release }}" > pyproject.toml
 
       - run: |
           ${{ steps.cp310.outputs.python-path }} -m pip install maturin
@@ -116,19 +114,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels
-          path: yagna/dist
+          path: websocat/dist
 
       - name: Upload to test pypi
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TESTPYPI_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.WEBSOCAT_TEST_PYPI }}
         if: github.event.inputs.publish_artifacts == 'testpypi'
         run: |
           twine upload --repository testpypi dist/*
       - name: Upload to pypi
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.WEBSOCAT_PYPI }}
         if: github.event.inputs.publish_artifacts == 'pypi'
         run: |
           twine upload dist/*
