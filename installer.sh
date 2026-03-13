@@ -196,7 +196,7 @@ detect_dist() {
     x86_64 | x86-64 | x64 | amd64)
         _cputype=x86_64
         ;;
-    arm64 | aarch64)
+    arm64 | aarch64 | armv7l)
         _cputype=aarch64
         if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
             err "We do not support running a provider on ARM devices yet. Please use an x86_64 machine to install the provider."
