@@ -3,6 +3,8 @@
 
 set -eu
 
+exit 1
+
 GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
 BATCH_MODE="${BATCH_MODE:-no}"
 
