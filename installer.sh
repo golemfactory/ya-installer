@@ -3,6 +3,12 @@
 
 set -eu
 
+# Temporary emergency stop. Remove this block to re-enable installations.
+printf '%s\n' \
+    'golem-installer: installation is temporarily disabled due to a critical issue.' \
+    'golem-installer: please try again later.' >&2
+exit 1
+
 GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
 BATCH_MODE="${BATCH_MODE:-no}"
 
