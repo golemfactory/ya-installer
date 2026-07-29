@@ -3,8 +3,6 @@
 
 set -eu
 
-exit 1
-
 GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
 BATCH_MODE="${BATCH_MODE:-no}"
 
@@ -252,7 +250,7 @@ download_core() {
     _variant="$2"
     mkdir -p "$YA_INSTALLER_DATA/bundles"
 
-    _url="https://github.com/golemfactory/yagna/releases/download/${YA_INSTALLER_CORE}/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
+    _url="https://golem-releases.cdn.golem.network/yagna/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
     _dl_start "golem core" "$YA_INSTALLER_CORE"
     (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -) || return 1
     _dl_end
