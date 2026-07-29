@@ -1,5 +1,11 @@
 name: Update installer
-on: workflow_dispatch
+run-name: Update installer to ${{ inputs.release }}
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Yagna release tag (for example v0.17.7)'
+        required: true
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -9,9 +15,8 @@ jobs:
         with:
           python-version: '3.8'
       - run: |
-          mkdir dist/dev
           cp setup-kvm.sh dist/
-          python gen.py
+          python gen.py "${{ inputs.release }}"
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
