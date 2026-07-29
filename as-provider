@@ -3,7 +3,6 @@
 
 set -eu
 
-# Temporary silent emergency stop. Remove these lines to re-enable installations.
 exit 1
 
 GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
