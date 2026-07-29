@@ -3,13 +3,11 @@
 
 set -eu
 
-exit 1
-
 GOLEM_ACCEPT_TOS="${GOLEM_ACCEPT_TOS:-no}"
 BATCH_MODE="${BATCH_MODE:-no}"
 
-YA_INSTALLER_VARIANT=provider
-YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v0.17.6}"
+YA_INSTALLER_VARIANT="${YA_INSTALLER_VARIANT:-provider}"
+YA_INSTALLER_CORE="v0.17.7"
 
 YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-v0.2.2}
 YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.4.2}
@@ -194,15 +192,23 @@ detect_dist() {
     x86_64 | x86-64 | x64 | amd64)
         _cputype=x86_64
         ;;
-    *)
+    arm64 | aarch64 | armv7l)
+        _cputype=aarch64
         if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
             err "We do not support running a provider on ARM devices yet. Please use an x86_64 machine to install the provider."
         fi
         ;;
+    *)
+        err "invalid cputype: $_cputype"
+        ;;
     esac
     case "$_ostype" in
     Linux)
-        _ostype=linux
+        if [ "$_cputype" = "aarch64" ]; then
+            _ostype=linux_aarch64
+        else
+            _ostype=linux
+        fi
         ;;
     Darwin)
         _ostype=osx
@@ -240,7 +246,7 @@ download_core() {
     _variant="$2"
     mkdir -p "$YA_INSTALLER_DATA/bundles"
 
-    _url="https://github.com/golemfactory/yagna/releases/download/${YA_INSTALLER_CORE}/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
+    _url="https://golem-releases.cdn.golem.network/yagna/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}.tar.gz"
     _dl_start "golem core" "$YA_INSTALLER_CORE"
     (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -) || return 1
     _dl_end
