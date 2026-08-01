@@ -12,7 +12,7 @@ VERSION_PATTERN = re.compile(
 
 def installer_config_template(version: str, variant: str = "provider"):
     yield f'YA_INSTALLER_VARIANT="${{YA_INSTALLER_VARIANT:-{variant}}}"'
-    yield f'YA_INSTALLER_CORE="{version}"'
+    yield f'YA_INSTALLER_CORE="${{YA_INSTALLER_CORE:-{version}}}"'
 
 
 def setup_provider_template():
