@@ -13,6 +13,8 @@ YA_INSTALLER_CORE="${YA_INSTALLER_CORE:-v0.4.1}"
 
 ## @@END_SELECT_VERSION@@
 
+# keep: leave WASI untouched; remove: delete its descriptor; version: install WASI.
+YA_INSTALLER_WASI=${YA_INSTALLER_WASI:-remove}
 YA_INSTALLER_VM=${YA_INSTALLER_VM:-v0.4.2}
 
 version_name() {
@@ -256,6 +258,19 @@ download_core() {
     echo -n "$YA_INSTALLER_DATA/bundles/golem-${_variant}-${_ostype}-${YA_INSTALLER_CORE}"
 }
 
+download_wasi() {
+    local _ostype _url
+
+    _ostype="$1"
+    mkdir -p "$YA_INSTALLER_DATA/bundles"
+
+    _url="https://github.com/golemfactory/ya-runtime-wasi/releases/download/${YA_INSTALLER_WASI}/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}.tar.gz"
+    _dl_start "wasi runtime" "$YA_INSTALLER_WASI"
+    (downloader "$_url" - | tar -C "$YA_INSTALLER_DATA/bundles" -xz -f -) || return 1
+    _dl_end
+    echo -n "$YA_INSTALLER_DATA/bundles/ya-runtime-wasi-${_ostype}-${YA_INSTALLER_WASI}"
+}
+
 download_vm() {
     local _ostype _url
 
@@ -324,7 +339,7 @@ rm -rf "$_resources_dir"
 }
 
 main() {
-    local _ostype _src_core _bin _src_vm
+    local _ostype _src_core _bin _src_wasi="" _src_vm=""
 
     _ostype="$(detect_dist)" || exit 1
     downloader --check
@@ -343,6 +358,10 @@ main() {
     _dl_head
     _src_core=$(download_core "$_ostype" "$YA_INSTALLER_VARIANT") || return 1
     if [ "$YA_INSTALLER_VARIANT" = "provider" ]; then
+        case "$YA_INSTALLER_WASI" in
+            keep | remove) ;;
+            *) _src_wasi=$(download_wasi "$_ostype") || return 1 ;;
+        esac
         if [ "$_ostype" = "linux" ]; then
             _src_vm=$(download_vm "$_ostype") || exit 1
 
@@ -355,8 +374,11 @@ main() {
         # Cleanup core plugins to make ya-provider use ~/.local/lib/yagna/plugins
         rm -rf "$_src_core/plugins"
         test -n "$_src_vm" && install_plugins "$_src_vm" "$YA_INSTALLER_LIB"
-        # Remove the obsolete WASI runtime descriptor from previous installations.
-        rm -f "$YA_INSTALLER_LIB/plugins/ya-runtime-wasi.json"
+        case "$YA_INSTALLER_WASI" in
+            keep) ;;
+            remove) rm -f "$YA_INSTALLER_LIB/plugins/ya-runtime-wasi.json" ;;
+            *) install_plugins "$_src_wasi" "$YA_INSTALLER_LIB" ;;
+        esac
         (
             PATH="$YA_INSTALLER_BIN:$PATH"
             if test "${BATCH_MODE}" = "no"; then
